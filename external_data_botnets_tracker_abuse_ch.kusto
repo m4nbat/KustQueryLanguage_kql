@@ -1,0 +1,7 @@
+## https://feodotracker.abuse.ch/
+let abuse_ch_botnets = externaldata(first_seen:datetime,last_online:datetime,ip_address:string, port:int, status:string,	hostname:string,as_number:int,as_name:string,country:string,malware:string)
+[
+ h@"https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.json"
+]
+with(format="multijson",ignoreFirstRecord=true);
+abuse_ch_botnets
