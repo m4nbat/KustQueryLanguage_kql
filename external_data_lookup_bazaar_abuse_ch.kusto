@@ -1,0 +1,23 @@
+## https://bazaar.abuse.ch/
+let abuse_ch_malware = externaldata(data:dynamic)
+[
+h@"https://bazaar.abuse.ch/export/csv/recent/"
+]
+with(format="txt",ignoreFirstRecord=true);
+abuse_ch_malware
+| extend firstSeen = todatetime(data[0])
+| extend reporter = tostring(data[5])
+| extend fileName = tostring(data[6])
+| extend fileTypeGuess = tostring(data[7])
+| extend mimeType = tostring(data[8])
+| extend signature = tostring(data[9])
+| extend clamAv = tostring(data[10])
+| extend vtPercent = tostring(data[11])
+| extend imphash = tostring(data[12])
+| extend sha256 = tostring(data[2])
+| extend sha1 = tostring(data[4])
+| extend md5 = tostring(data[3])
+| extend ssdeep = tostring(data[13])
+| extend tlsh = tostring(data[14])
+| where isnotempty(firstSeen) 
+| project-away data
