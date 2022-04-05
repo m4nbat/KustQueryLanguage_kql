@@ -1,55 +1,85 @@
+//set a start time for query
+let start = startofmonth(now()-30d);
+//set an end time for query
+let end = endofmonth(now()-30d);
 //create a list of closed incidents to run SLA's against
 let closedIncidents = SecurityIncident
+| where not(Title has_any ("Missing","Tag"))
+| where TimeGenerated between (start .. end)
 | where Status =~ "Closed"
 | summarize arg_max(TimeGenerated,*) by IncidentNumber
 | distinct IncidentNumber;
 //grab the generated time this is when it first arrived in the queue
 let stageOne = SecurityIncident
+| where TimeGenerated between (start .. end)
 | where IncidentNumber in (closedIncidents)
 | where Status =~ "New"
 | summarize arg_min(TimeGenerated,*) by IncidentNumber
-| project generatedTime = TimeGenerated, IncidentNumber;
+| project generatedTime = TimeGenerated, IncidentNumber, Severity;
 //grab the acknowledged time and the person who acknowledged the incident
 let stageTwo = SecurityIncident
-| where IncidentNumber in (closedIncidents)
+| where TimeGenerated between (start .. end)
+//| where IncidentNumber in (closedIncidents)
 | where Status =~ "Active"
 | summarize arg_min(TimeGenerated,*) by IncidentNumber
-| project acknowledgedTime = TimeGenerated, IncidentNumber, AcknowledgedBy=ModifiedBy
+| project acknowledgedTime = TimeGenerated, IncidentNumber, AcknowledgedBy=ModifiedBy, Severity
 | join stageOne on IncidentNumber;
 //grab the closed time, the priority and the person who closed the alert
 let stageThree = SecurityIncident
+| where TimeGenerated between (start .. end)
 | where IncidentNumber in (closedIncidents)
 | where Status =~ "Closed"
 | summarize arg_min(TimeGenerated,*) by IncidentNumber
 | project closedTime = TimeGenerated, IncidentNumber, ClosedBy=ModifiedBy
-| join stageTwo on IncidentNumber;
-//grab priorities, created mean time to acknowledge and mean time to close, check MTTA and MTTC was within SLA requirements
-let stats = SecurityIncident
-| where IncidentNumber in (closedIncidents)
+| join kind=rightouter stageTwo on IncidentNumber;
+let stageFour = SecurityIncident
+| where TimeGenerated between (start .. end)
 | summarize arg_max(TimeGenerated,*) by IncidentNumber
-| join stageThree on IncidentNumber
-| extend Priority = toupper(tostring(Labels[0].labelName))
-| extend Priority = extract("(P[1-5](\\+)?)",0,Priority)
-| where Priority in~ ("P1","P2","P3","P4","P5")
+| join kind=rightouter stageThree on IncidentNumber;
+let incidentsInPeriod = SecurityIncident
+| where TimeGenerated between (start .. end)
+| summarize arg_max(CreatedTime,*) by IncidentNumber
+| count;
+//grab the escalated time
+let stageFive = SecurityIncident
+| where TimeGenerated between (start .. end) and Labels contains "Escalated" //and IncidentNumber in (closedIncidents) 
+| summarize arg_min(TimeGenerated,*) by IncidentNumber
+| project escalatedTime = TimeGenerated, IncidentNumber, EscalatedBy=ModifiedBy, Severity
+| join kind=rightouter stageFour on IncidentNumber;
+let SOCreport = stageFive
 | extend TimeToAcknowledge=(acknowledgedTime-generatedTime)
+| extend TimeToRespond=(closedTime-acknowledgedTime)
 | extend TimeToClose=(closedTime-generatedTime)
-| extend MTTA_SLA = case(TimeToAcknowledge > time("00:30:00") and Priority =~ "P1","P1 SLA Fail",
-                        TimeToAcknowledge > time("01:00:00") and Priority =~ "P2","P2 SLA Fail",
-                        TimeToAcknowledge > time("04:00:00") and Priority =~ "P3","P3 SLA Fail",
-                        TimeToAcknowledge > time("1.00:00:00") and Priority =~ "P4","P4 SLA Fail",
+| extend TimeToEscalate=(escalatedTime-acknowledgedTime)
+| extend PriorityRating = case(Severity =~ "High","P1",
+                        Severity =~ "Medium","P2",
+                        Severity =~ "Low","P3",
+                        "P4")
+| extend MTTA_SLA = case(TimeToAcknowledge > time("00:30:00") and PriorityRating =~ "P1","P1 SLA Fail",
+                        TimeToAcknowledge > time("01:00:00") and PriorityRating =~ "P2","P2 SLA Fail",
+                        TimeToAcknowledge > time("04:00:00") and PriorityRating =~ "P3","P3 SLA Fail",
+                        TimeToAcknowledge > time("1.00:00:00") and PriorityRating =~ "P4","P4 SLA Fail",
                         "SLA Achieved")
-| extend MTTC_SLA = case(TimeToClose > time("12:00:00") and Priority =~ "P1","P1 SLA Fail",
-                        TimeToClose > time("1.00:00:00") and Priority =~ "P2","P2 SLA Fail",
-                        TimeToClose > time("2.00:00:00") and Priority =~ "P3","P3 SLA Fail",
-                        TimeToClose > time("7.00:00:00") and Priority =~ "P4","P4 SLA Fail",
-                        "SLA Achieved");
-//Get the overall mean time to acknowledge by priority
-let MTTA = stats
-| summarize MTTA=avg(TimeToAcknowledge) by Priority;
-//Get the overall mean time to close by priority
-let MTTC = stats
-| summarize MTTC=avg(TimeToClose) by Priority;
-stats
-| project-away IncidentNumber1, IncidentNumber2, IncidentNumber3, TenantId, SourceSystem, Type, IncidentName, Owner
-| project Title, Priority, Severity, generatedTime, acknowledgedTime, TimeToAcknowledge, AcknowledgedBy, closedTime, TimeToClose, ClosedBy, MTTA_SLA
-| sort by TimeToAcknowledge desc
+| extend MTTE_SLA = case(TimeToEscalate > time("00:20:00") and Severity =~ "P1","P1 SLA Fail",
+                        TimeToEscalate > time("00:30:00") and Severity =~ "P2","P2 SLA Fail",
+                        TimeToEscalate > time("00.00:40:00") and Severity =~ "P3","P3 SLA Fail",
+                       TimeToEscalate > time("7.00:00:00") and Severity =~ "P4","P4 SLA Fail",
+                        "SLA Achieved")
+| extend MTTC_SLA = case(TimeToClose > time("8:00:00") and Severity =~ "P1","P1 SLA Fail",
+                        TimeToClose > time("1.00:00:00") and Severity =~ "P2","P2 SLA Fail",
+                        TimeToClose > time("2.00:00:00") and Severity =~ "P3","P3 SLA Fail",
+                       TimeToClose > time("7.00:00:00") and Severity =~ "P4","P4 SLA Fail",
+                        "SLA Achieved")
+| project-away TimeGenerated
+| project IncidentNumber=IncidentNumber1, Severity=Severity1, PriorityRating, generatedTime, acknowledgedTime, closedTime, escalatedTime, TimeToAcknowledge, AcknowledgedBy,TimeToEscalate, EscalatedBy, TimeToClose, ClosedBy, TimeToRespond, MTTA_SLA, MTTE_SLA, MTTC_SLA, ModifiedBy
+| project-reorder IncidentNumber, Severity, PriorityRating, generatedTime, acknowledgedTime, closedTime, escalatedTime, TimeToAcknowledge, AcknowledgedBy, TimeToEscalate, EscalatedBy, TimeToClose, ClosedBy, TimeToRespond, MTTA_SLA, MTTE_SLA, MTTC_SLA, ModifiedBy;
+//Produce mean time to stats
+let MTT = SOCreport
+| summarize MTTA=avg(TimeToAcknowledge),MTTR=avg(TimeToRespond), MTTE=avg(TimeToEscalate), MTTC=avg(TimeToClose);
+//Produce mean time to stats by owner
+let MTTBySeverity = SOCreport
+| summarize MTTA=avg(TimeToAcknowledge),MTTR=avg(TimeToRespond), MTTE=avg(TimeToEscalate), MTTC=avg(TimeToClose) by Severity=Severity;
+//Produce mean time to stats by owner work to be done on this one
+let MTTByOwner = SOCreport
+| summarize MTTA=avg(TimeToAcknowledge),MTTR=avg(TimeToRespond), MTTE=avg(TimeToEscalate), MTTC=avg(TimeToClose) by ModifiedBy;
+SOCreport
