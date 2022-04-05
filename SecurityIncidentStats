@@ -1,7 +1,7 @@
 //set a start time for query
-let start = startofmonth(now()-30d);
+let start = startofmonth(now());
 //set an end time for query
-let end = endofmonth(now()-30d);
+let end = endofmonth(now());
 //create a list of closed incidents to run SLA's against
 let closedIncidents = SecurityIncident
 | where not(Title has_any ("Missing","Tag"))
@@ -51,24 +51,26 @@ let SOCreport = stageFive
 | extend TimeToRespond=(closedTime-acknowledgedTime)
 | extend TimeToClose=(closedTime-generatedTime)
 | extend TimeToEscalate=(escalatedTime-acknowledgedTime)
+//create prieoity rating based on severities
 | extend PriorityRating = case(Severity =~ "High","P1",
                         Severity =~ "Medium","P2",
                         Severity =~ "Low","P3",
                         "P4")
+                        //compare acknowledgment times against hard coded SLA values 
 | extend MTTA_SLA = case(TimeToAcknowledge > time("00:30:00") and PriorityRating =~ "P1","P1 SLA Fail",
                         TimeToAcknowledge > time("01:00:00") and PriorityRating =~ "P2","P2 SLA Fail",
-                        TimeToAcknowledge > time("04:00:00") and PriorityRating =~ "P3","P3 SLA Fail",
-                        TimeToAcknowledge > time("1.00:00:00") and PriorityRating =~ "P4","P4 SLA Fail",
+                        TimeToAcknowledge > time("02:00:00") and PriorityRating =~ "P3","P3 SLA Fail",
+                        TimeToAcknowledge > time("04:00:00") and PriorityRating =~ "P4","P4 SLA Fail",
                         "SLA Achieved")
-| extend MTTE_SLA = case(TimeToEscalate > time("00:20:00") and Severity =~ "P1","P1 SLA Fail",
-                        TimeToEscalate > time("00:30:00") and Severity =~ "P2","P2 SLA Fail",
-                        TimeToEscalate > time("00.00:40:00") and Severity =~ "P3","P3 SLA Fail",
-                       TimeToEscalate > time("7.00:00:00") and Severity =~ "P4","P4 SLA Fail",
+| extend MTTE_SLA = case(TimeToEscalate > time("00:30:00") and Severity =~ "P1","P1 SLA Fail",
+                        TimeToEscalate > time("01:00:00") and Severity =~ "P2","P2 SLA Fail",
+                        TimeToEscalate > time("02:40:00") and Severity =~ "P3","P3 SLA Fail",
+                       TimeToEscalate > time("04:00:00") and Severity =~ "P4","P4 SLA Fail",
                         "SLA Achieved")
-| extend MTTC_SLA = case(TimeToClose > time("8:00:00") and Severity =~ "P1","P1 SLA Fail",
-                        TimeToClose > time("1.00:00:00") and Severity =~ "P2","P2 SLA Fail",
-                        TimeToClose > time("2.00:00:00") and Severity =~ "P3","P3 SLA Fail",
-                       TimeToClose > time("7.00:00:00") and Severity =~ "P4","P4 SLA Fail",
+| extend MTTC_SLA = case(TimeToClose > time("12:00:00") and Severity =~ "P1","P1 SLA Fail",
+                        TimeToClose > time("2.00:00:00") and Severity =~ "P2","P2 SLA Fail",
+                        TimeToClose > time("5.00:00:00") and Severity =~ "P3","P3 SLA Fail",
+                       TimeToClose > time("10.00:00:00") and Severity =~ "P4","P4 SLA Fail",
                         "SLA Achieved")
 | project-away TimeGenerated
 | project IncidentNumber=IncidentNumber1, Severity=Severity1, PriorityRating, generatedTime, acknowledgedTime, closedTime, escalatedTime, TimeToAcknowledge, AcknowledgedBy,TimeToEscalate, EscalatedBy, TimeToClose, ClosedBy, TimeToRespond, MTTA_SLA, MTTE_SLA, MTTC_SLA, ModifiedBy
