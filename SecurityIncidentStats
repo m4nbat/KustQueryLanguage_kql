@@ -12,7 +12,7 @@ let closedIncidents = SecurityIncident
 //grab the generated time this is when it first arrived in the queue
 let stageOne = SecurityIncident
 | where TimeGenerated between (start .. end)
-| where IncidentNumber in (closedIncidents)
+//| where IncidentNumber in (closedIncidents)
 | where Status =~ "New"
 | summarize arg_min(TimeGenerated,*) by IncidentNumber
 | project generatedTime = TimeGenerated, IncidentNumber, Severity;
@@ -27,7 +27,7 @@ let stageTwo = SecurityIncident
 //grab the closed time, the priority and the person who closed the alert
 let stageThree = SecurityIncident
 | where TimeGenerated between (start .. end)
-| where IncidentNumber in (closedIncidents)
+//| where IncidentNumber in (closedIncidents)
 | where Status =~ "Closed"
 | summarize arg_min(TimeGenerated,*) by IncidentNumber
 | project closedTime = TimeGenerated, IncidentNumber, ClosedBy=ModifiedBy
