@@ -11,7 +11,7 @@ let closed_incidents = incidentsInPeriod
 | summarize IncClosedTime=arg_min(TimeGenerated, *) by IncidentNumber 
 | extend ClosureLabels=Labels | extend ClosedBy=ModifiedBy;
 let escalated_incidents = incidentsInPeriod 
-| where Labels matches regex '(?i)escalate|(?i)bw.a' or Labels contains "Escalated" 
+| where Labels contains "Escalated" 
 | summarize EscalationTime=arg_min(TimeGenerated, *) by IncidentNumber 
 | extend EscalatedBy=ModifiedBy;
 let acknowledged_incidents = incidentsInPeriod 
