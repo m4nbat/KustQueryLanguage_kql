@@ -70,8 +70,8 @@ let SLA_Details = (incidentsInPeriod
                         TimeToClose > time("10.00:00:00") and postTriagePriority =~ "P4","P4 SLA Fail",
                         TimeToClose == totimespan("99:99:99.999999"),  "Closure SLA not recorded at present",
                         isempty(TimeToClose), "Closure SLA not recorded at present",
-                        "SLA Achieved")| project IncidentNumber, Severity=Severity1, postTriagePriority, PriorityRating, CreatedTime, AckTime, ClosedTime, EscalationTime, TimeToAcknowledge, AcknowledgedBy,TimeToEscalate, EscalatedBy, TimeToClose, ClosedBy, TimeToRespond, MTTA_SLA, MTTR_SLA, MTTE_SLA, MTTC_SLA, ClosureLabels
-| project-reorder IncidentNumber, Severity, postTriagePriority, PriorityRating, CreatedTime, AckTime, ClosedTime, EscalationTime, TimeToAcknowledge, AcknowledgedBy, TimeToEscalate, EscalatedBy, TimeToClose, ClosedBy, TimeToRespond, MTTA_SLA, MTTR_SLA, MTTE_SLA, MTTC_SLA);
+                        "SLA Achieved")| project Title, IncidentNumber, Severity=Severity1, postTriagePriority, PriorityRating, CreatedTime, AckTime, ClosedTime, EscalationTime, TimeToAcknowledge, AcknowledgedBy,TimeToEscalate, EscalatedBy, TimeToClose, ClosedBy, TimeToRespond, MTTA_SLA, MTTR_SLA, MTTE_SLA, MTTC_SLA, ClosureLabels
+| project-reorder Title, IncidentNumber, Severity, postTriagePriority, PriorityRating, CreatedTime, AckTime, ClosedTime, EscalationTime, TimeToAcknowledge, AcknowledgedBy, TimeToEscalate, EscalatedBy, TimeToClose, ClosedBy, TimeToRespond, MTTA_SLA, MTTR_SLA, MTTE_SLA, MTTC_SLA);
 //Produce mean time to stats
 let MTT = SLA_Details
 | summarize Incidents=count(),MTTA=avg(TimeToAcknowledge),MTTR=avg(TimeToRespond), MTTE=avg(TimeToEscalate), MTTC=avg(TimeToClose);
@@ -84,4 +84,6 @@ let MTTByPriority = SLA_Details
 //Produce mean time to stats by owner work to be done on this one
 let MTTByOwner = SLA_Details
 | summarize Incidents=count(),MTTA=avg(TimeToAcknowledge),MTTR=avg(TimeToRespond), MTTE=avg(TimeToEscalate), MTTC=avg(TimeToClose);
-MTTByPriority
+let MTTByAnalytic = SLA_Details
+| summarize Incidents=count(),MTTA=avg(TimeToAcknowledge),MTTR=avg(TimeToRespond), MTTE=avg(TimeToEscalate), MTTC=avg(TimeToClose) by Title;
+MTTByAnalytic
