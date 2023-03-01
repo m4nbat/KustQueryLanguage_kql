@@ -27,13 +27,13 @@ This detection opportunity identifies the Windows Script Host, wscript.exe, exec
 **Detection opportunity: PowerShell (powershell.exe) performing a reflective load of a .NET assembly**
 This detection opportunity identifies PowerShell loading a .NET assembly into memory for execution using the System.Reflection capabilities of the .NET Framework. This detects PowerShell loading the .NET component of Gootloader and multiple additional threats in the wild.
 
-```DeviceProcessEvents
-| where FileName =~ "powershell.exe" and ProcessCommandLine has_all ("Reflection.Assembly","Load","byte[]")```
+`DeviceProcessEvents
+| where FileName =~ "powershell.exe" and ProcessCommandLine has_all ("Reflection.Assembly","Load","byte[]")`
 
 **Detection opportunity: Rundll32 (rundll32.exe) with no command-line arguments**
 This detection opportunity identifies rundll32.exe executing with no command-line arguments as an injection target like we usually see for Cobalt Strike beacon injection. The beacon distributed by Gootloader in this instance used rundll32.exe, as do many other beacons found in the wild.```
 
-```DeviceProcessEvents
+`DeviceProcessEvents
 | where InitiatingProcessFileName =~ "rundll32.exe" and isempty(InitiatingProcessCommandLine)
 | join DeviceNetworkEvents on InitiatingProcessFileName
-| where isnotempty(RemoteUrl)```
+| where isnotempty(RemoteUrl)`
