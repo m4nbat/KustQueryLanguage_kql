@@ -1,6 +1,6 @@
 # Gootloader Hunt Queries
 
-## Source: The Goot cause: Detecting Gootloader and its follow-on activity (redcanary.com)
+## Source: The Goot cause: Detecting Gootloader and its follow-on activity ([redcanary.com](https://redcanary.com/blog/gootloader/))
 
 **New detection opportunity: wscript.exe spawning cscript.exe and PowerShell**
 This detection opportunity identifies the chain of process executions—whereby wscript.exe spawns cscript.exe and cscript.exe spawns powershell.exe—described in the Execution section that we updated on November 18, 2022.
