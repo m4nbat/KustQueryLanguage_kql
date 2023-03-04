@@ -1,0 +1,7 @@
+# OneNote spawning suspicious child processes
+The following pseudo-detection analytic identifies OneNote as a parent process for suspicious child processes. This is not a new type of analytic; historically they have been useful for detecting suspicious Excel child processes. The same type of logic can be leveraged to detect suspicious OneNote activity. This pseudo-analytic would need to be updated as adversaries change which processes they start with OneNote, so an alternative option would be to detect any child processes spawned from Office applications.
+
+`//OneNote spawning suspicious child processes
+//The following detection analytic identifies OneNote as a parent process for suspicious child processes. This is not a new type of analytic; historically they have been useful for detecting suspicious Excel child processes. The same type of logic can be leveraged to detect suspicious OneNote activity. This pseudo-analytic would need to be updated as adversaries change which processes they start with OneNote, so an alternative option would be to detect any child processes spawned from Office applications.
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "onenote.exe" and FileName =~ "cmd.exe"`
