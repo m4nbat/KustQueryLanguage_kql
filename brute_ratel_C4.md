@@ -1,6 +1,6 @@
 # Brute Ratel Sentinel Queries
 
-# Kusto Queries
+## Kusto Queries
 
 `// Possible Brute Ratel C4 Red Team Tool Detect (via DeviceFileEvents)
 DeviceFileEvents 
