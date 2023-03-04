@@ -1,12 +1,12 @@
 # Source: Detailed Report https://thedfirreport.com/2023/01/23/sharefinder-how-threat-actors-discover-file-shares/
 
 # SIGMAs:
-	-https://github.com/The-DFIR-Report/Sigma-Rules/blob/main/rules/windows/builtin/win_security_invoke_sharefinder_discovery.yml
+	- https://github.com/The-DFIR-Report/Sigma-Rules/blob/main/rules/windows/builtin/win_security_invoke_sharefinder_discovery.yml
 	- https://github.com/The-DFIR-Report/Sigma-Rules/blob/main/rules/windows/powershell/powershell_script/posh_ps_invoke_sharefinder_discovery.yml
 	- https://github.com/The-DFIR-Report/Sigma-Rules/blob/main/rules/network/zeek/zeek_smb_mapping_invoke-sharefinder_discovery.yml
 
 # Encoded data. Adversaries may encode data to make the content of command and control traffic more difficult to detect. 
-//T1132 - T1132.001 - Base64 Encoded data. Adversaries may encode data to make the content of command and control traffic more difficult to detect. 
+`//T1132 - T1132.001 - Base64 Encoded data. Adversaries may encode data to make the content of command and control traffic more difficult to detect. 
 DeviceProcessEvents 
 | where FileName =~ "powershell.exe"
 //filter out FPs caused by the MDE SenseIR binary
@@ -26,4 +26,4 @@ DeviceProcessEvents
 | extend test = replace(@'\00', @'', DecodedString)
 | extend DShash = hash_md5(DecodedString)
 | where DShash != "765213794bd23a89ce9a84459a0cef80"
-| where InitiatingProcessCommandLine contains "Invoke-ShareFinder" or DecodedString contains "Invoke-ShareFinder"
+| where InitiatingProcessCommandLine contains "Invoke-ShareFinder" or DecodedString contains "Invoke-ShareFinder"`
