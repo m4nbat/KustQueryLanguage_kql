@@ -21,3 +21,7 @@ EmailEvents
 | where TimeGenerated > ago(14d)
 | join EmailUrlInfo on NetworkMessageId
 | where EmailDirection =~ "Inbound" and Url contains "ipfs.io" and DeliveryAction != 'Blocked'`
+
+# Looking for post phish clickers
+// you may need to adjust your tables and fields accordingly but the intent is to check your URI or request fields using the regex below
+CommonSecurityLog | where (cs_uri matches regex @'(?i)ipfs.io/ipfs.+\..+@.+\..+')
