@@ -23,6 +23,13 @@ DeviceProcessEvents
 | order by TimeGenerated`
 
 
+`SecurityEvent
+| where Process  has "powershell.exe"
+| where CommandLine contains "http"
+| where ProcessCommandLine has_any (pasteSites) or  ProcessCommandLine contains ".onion" or ProcessCommandLine contains "paste."
+| project TimeGenerated, Computer, tostring(EventID), ParentProcessName, NewProcessName, CommandLine, SubjectUserName, SourceComputerId, processID=tolong(NewProcessId), parentProcessID=tolong(ProcessId), EventData| order by TimeGenerated`
+
+
 ### MDE
 
 `// Detect network connections to paste sites
