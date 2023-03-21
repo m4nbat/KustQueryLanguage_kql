@@ -1,5 +1,6 @@
 # VBScript stored in non-run CurrentVersion registry key
 # Source: Cyborg www.cyborgsecurity.io
+## Logic tweaked and improved by GK from original
 
 `DeviceRegistryEvents
 | where RegistryKey has "\\CurrentVersion" 
