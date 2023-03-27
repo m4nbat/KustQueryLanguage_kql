@@ -60,22 +60,24 @@ DeviceProcessEvents
 ## Technique: Service Control Manager spawning Command Shell with suspect strings
 The following pseudo detector should generate an alert when services.exe spawns cmd.exe along with a corresponding echo or /c command, which are common attributes of post exploitation that we’ve seen in association with this technique.
 
-//Service Control Manager spawning Command Shell with suspect strings
+`//Service Control Manager spawning Command Shell with suspect strings
 //The following pseudo detector should generate an alert when services.exe spawns cmd.exe along with a corresponding echo or /c command, which are common attributes of post exploitation that we’ve seen in association with this technique.
 //pseudocode: parent_process == 'services.exe' && process == 'cmd.exe'  && command_includes ('echo' || '/c') 
 DeviceProcessEvents
 | where InitiatingProcessFileName == "services.exe"
 | where FileName == "cmd.exe"
-| where ProcessCommandLine contains "echo" or ProcessCommandLine contains "/c"
+| where ProcessCommandLine contains "echo" or ProcessCommandLine contains "/c"`
 
 ## Technique: Windows Explorer spawning Command Shell with start and exit commands
 This detection analytic looks for instances of explorer.exe spawning cmd.exe along with corresponding start and exit commands that we commonly observe in conjunction with a wide variety of malicious activity.
 
-//Windows Explorer spawning Command Shell with start and exit commands
+`//Windows Explorer spawning Command Shell with start and exit commands
 //This detection analytic looks for instances of explorer.exe spawning cmd.exe along with corresponding start and exit commands that we commonly observe in conjunction with a wide variety of malicious activity.
 // pseudocode: parent_process == 'explorer.exe' && process == 'cmd.exe' && command_includes ('start' && 'exit')
 DeviceProcessEvents
 | where InitiatingProcessFileName == "explorer.exe"
 | where FileName == "cmd.exe"
-| where ProcessCommandLine contains "start" and ProcessCommandLine contains "exit"
+| where ProcessCommandLine contains "start" and ProcessCommandLine contains "exit"`
+
+
 
