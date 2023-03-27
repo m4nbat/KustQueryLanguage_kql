@@ -10,7 +10,7 @@ To locate possible exploitation activity, run the following queries in Microsoft
 
 Large file delivered from small archive file. Look for the delivery of a large (> 256MB) executable by an archive file. This is often used as a security detection evasion.
 
-let largeFileMin = 268435456; // 256mb
+`let largeFileMin = 268435456; // 256mb
 let smallFileMin = 102400; // 100kb
 let smallFileMax = 67108864; // 64mb
 let ratioMin = 75; // compression ratio, larger number indicates padding/ empty values more likely
@@ -113,4 +113,4 @@ smallParentFull
     has_UnprotectDPAPI=iff(isnotnull(UnprotectTime),true,bool(null)),
     has_FileOpen=iff(isnotnull(FileOpenTime),true,bool(null))
 | project-reorder DownloadTime, FileUnpackTime, ScreenShotTime, FileOpenTime, 
-    UnprotectTime, has_*, DeviceId, ratioPacked, DownloadFileSize, UnpackSize
+    UnprotectTime, has_*, DeviceId, ratioPacked, DownloadFileSize, UnpackSize`
