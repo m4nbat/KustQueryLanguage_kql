@@ -1,5 +1,8 @@
+# Emotet TTPs Q1 2023
+## Source: Microsoft Threat Analytics
 
-# Source: Microsoft Threat Analytics
+![image](https://user-images.githubusercontent.com/16122365/227981654-827905ae-9088-42bf-925a-990c6b163a5b.png)
+
 
 **NOTE:** The following sample queries let you search for a week's worth of events. To explore up to 30 days’ worth of raw data to inspect events in your network and locate potential Emotet zip bomb-related indicators for more than a week, go to the Advanced Hunting page > Query tab, select the calendar dropdown menu to update your query to hunt for the Last 30 days.
 
