@@ -7,13 +7,13 @@
 ## Tactic: Execution
 ## Technique: T1059.003 Windows Command Shell
 **Source:** https://redcanary.com/threat-detection-report/techniques/windows-command-shell/
-DeviceFileEvents
+`DeviceFileEvents
 | where (InitiatingProcessParentFileName endswith "mshta.exe" or InitiatingProcessFileName endswith "mshta.exe") and (InitiatingProcessFileName endswith "cmd.exe" or FileName endswith "cmd.exe") and ActionType in~ ("FileCreated","FileModified")`
 
 ## Tactic: Execution
 ## Technique: T1059.003 Windows Command Shell
 **Source:** https://redcanary.com/threat-detection-report/techniques/windows-command-shell/
-DeviceFileEvents
+`DeviceFileEvents
 | where (InitiatingProcessParentFileName endswith "w3p.exe" or InitiatingProcessFileName endswith "w3p.exe") and (InitiatingProcessFileName endswith "cmd.exe" or FileName endswith "cmd.exe" or InitiatingProcessFileName endswith "powershell.exe" or FileName endswith "powershell.exe")`
 
 ## Tactic:  DefenseEvasion
@@ -22,7 +22,7 @@ Identify commandlines with possible obfuscation
 **pseudocode example:**  process == cmd.exe && command_includes [high numbers of the following characters] ('^' || '=' || '%' || '!' || '[' || '(' || ';' || ' ')
 //test '%LOCALAPPDATA:~-3,1%md /c echo "tweet, tweet" > tweet.txt & type tweet.txt'
 
-DeviceProcessEvents
+`DeviceProcessEvents
 | where InitiatingProcessFileName endswith "cmd.exe" or FileName endswith "cmd.exe"
 | extend a = countof(@'InitiatingProcessCommandLine" > tweet.txt & type tweet.txt','^')
 | extend b = countof(@'InitiatingProcessCommandLine" > tweet.txt & type tweet.txt','=')
@@ -41,16 +41,16 @@ We have a lot of detection analytics that seek out suspicious or unusual process
 
 **pseudocode example:** parent_process == w3wp.exe && process == cmd.exe && command_includes ('http://' || 'https://' || 'echo') || child_process == powershell.exe
 
-let badCommands = datatable (command:string)[@"http://",@"https://","echo"];
+`let badCommands = datatable (command:string)[@"http://",@"https://","echo"];
 DeviceProcessEvents
 | where (InitiatingProcessParentFileName endswith "w3p.exe" or InitiatingProcessFileName endswith "w3p.exe") and (InitiatingProcessFileName endswith "cmd.exe" or FileName endswith "cmd.exe") and ((InitiatingProcessFileName endswith "powershell.exe" or FileName endswith "powershell.exe") or (InitiatingProcessCommandLine has_any (badCommands) or ProcessCommandLine has_any (badCommands)))`
 
 
-# Technique: Windows scheduled task create shell
+## Technique: Windows scheduled task create shell
 Adversaries frequently establish persistence by using scheduled tasks to launch the Windows Command Shell. Detecting this behavior is relatively straightforward.
 **Example commandline: **
 schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM
-let exampleCommand = datatable(commandline:string)['schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM'];
+`let exampleCommand = datatable(commandline:string)['schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM'];
 DeviceProcessEvents
 | where ProcessName == "schtasks.exe"
-| where CommandLine contains "create" and (CommandLine contains "cmd.exe /c" or CommandLine contains "cmd /c")
+| where CommandLine contains "create" and (CommandLine contains "cmd.exe /c" or CommandLine contains "cmd /c")`
