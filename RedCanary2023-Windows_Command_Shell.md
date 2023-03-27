@@ -49,7 +49,7 @@ DeviceProcessEvents
 ## Technique: Windows scheduled task create shell
 Adversaries frequently establish persistence by using scheduled tasks to launch the Windows Command Shell. Detecting this behavior is relatively straightforward.
 
-**Example commandline: ** schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM
+**Example commandline:** schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM
 
 `let exampleCommand = datatable(commandline:string)['schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM'];
 DeviceProcessEvents
