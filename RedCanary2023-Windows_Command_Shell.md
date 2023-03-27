@@ -47,13 +47,35 @@ We have a lot of detection analytics that seek out suspicious or unusual process
 DeviceProcessEvents
 | where (InitiatingProcessParentFileName endswith "w3p.exe" or InitiatingProcessFileName endswith "w3p.exe") and (InitiatingProcessFileName endswith "cmd.exe" or FileName endswith "cmd.exe") and ((InitiatingProcessFileName endswith "powershell.exe" or FileName endswith "powershell.exe") or (InitiatingProcessCommandLine has_any (badCommands) or ProcessCommandLine has_any (badCommands)))`
 
-
 ## Technique: Windows scheduled task create shell
 Adversaries frequently establish persistence by using scheduled tasks to launch the Windows Command Shell. Detecting this behavior is relatively straightforward.
 
 **Example commandline:** schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM
 
-`let exampleCommand = datatable(commandline:string)['schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM'];
+`let exampleCommand = datatable(ProcessCommandLine:string,FileName:string)['schtasks /Create /SC DAILY /TN spawncmd /TR "cmd.exe /c echo tweet, tweet" /RU SYSTEM','schtasks.exe'];
 DeviceProcessEvents
-| where ProcessName == "schtasks.exe"
-| where CommandLine contains "create" and (CommandLine contains "cmd.exe /c" or CommandLine contains "cmd /c")`
+| where FileName == "schtasks.exe"
+| where ProcessCommandLine contains "create" and (ProcessCommandLine contains "cmd.exe /c" or ProcessCommandLine contains "cmd /c")`
+
+## Technique: Service Control Manager spawning Command Shell with suspect strings
+The following pseudo detector should generate an alert when services.exe spawns cmd.exe along with a corresponding echo or /c command, which are common attributes of post exploitation that we’ve seen in association with this technique.
+
+//Service Control Manager spawning Command Shell with suspect strings
+//The following pseudo detector should generate an alert when services.exe spawns cmd.exe along with a corresponding echo or /c command, which are common attributes of post exploitation that we’ve seen in association with this technique.
+//pseudocode: parent_process == 'services.exe' && process == 'cmd.exe'  && command_includes ('echo' || '/c') 
+DeviceProcessEvents
+| where InitiatingProcessFileName == "services.exe"
+| where FileName == "cmd.exe"
+| where ProcessCommandLine contains "echo" or ProcessCommandLine contains "/c"
+
+## Technique: Windows Explorer spawning Command Shell with start and exit commands
+This detection analytic looks for instances of explorer.exe spawning cmd.exe along with corresponding start and exit commands that we commonly observe in conjunction with a wide variety of malicious activity.
+
+//Windows Explorer spawning Command Shell with start and exit commands
+//This detection analytic looks for instances of explorer.exe spawning cmd.exe along with corresponding start and exit commands that we commonly observe in conjunction with a wide variety of malicious activity.
+// pseudocode: parent_process == 'explorer.exe' && process == 'cmd.exe' && command_includes ('start' && 'exit')
+DeviceProcessEvents
+| where InitiatingProcessFileName == "explorer.exe"
+| where FileName == "cmd.exe"
+| where ProcessCommandLine contains "start" and ProcessCommandLine contains "exit"
+
