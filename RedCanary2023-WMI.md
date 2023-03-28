@@ -34,4 +34,20 @@ By monitoring and detecting on module loads, you can catch a variety of differen
 | where InitiatingProcessCommandline contains "format:" or ProcessCommandline contains "format:"
 // work to be done to identify how to link module loads | where InitiatingProcessFileName in~ ("jscript.dll", "vbscript.dll") "wmic.exe" or FileName in~ ("jscript.dll", "vbscript.dll")`
 
+## Office products spawning WMI
+It’s almost always malicious when wmic.exe spawns as a child process of Microsoft Office and similar products. As such, it makes sense to examine the chain of execution and follow-on activity when this occurs.
+
+**Pseudocode** parent_process == ('winword.exe' || 'excel.exe') && process == wmic.exe
+
+**Kusto:**
+DeviceProcessEvents
+| where InitiatingProcessParentFileName in~ ("winword.exe", "excel.exe") or InitiatingProcessFileName in~ ("winword.exe", "excel.exe")
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+
+## WMI reconnaissance
+Reconnaissance is harder to detect because it looks very similar to normal admin behavior. Even so, we detect a relatively high volume of adversaries leveraging WMI to quickly gather domain information such as users, groups, or computers in the domain.
+
+**Pseudocode** process == wmic.exe && command_includes ('\ldap' || 'ntdomain')
+
+**Kusto:**
 
