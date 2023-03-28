@@ -53,3 +53,27 @@ Reconnaissance is harder to detect because it looks very similar to normal admin
 `DeviceProcessEvents
 | where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
 | where InitiatingProcessCommandLine has_any ("\\ldap", "ntdomain") or ProcessCommandLine has_any ("\\ldap", "ntdomain")`
+
+## Shadow copy deletion
+It’s not uncommon for ransomware operators to leverage WMI to delete volume shadows, significantly complicating the process for recovering access to encrypted systems and files. If you want to detect ransomware using WMI to delete shadow copies, consider looking for wmic.exe execution with command lines including shadowcopy or delete.
+
+**Pseudocode** process == wmic.exe && command_includes ('shadowcopy' && 'delete')
+
+**Kusto:**
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+| where InitiatingProcessCommandLine has_all ("shadowcopy", "delete") or ProcessCommandLine has_all ("shadowcopy", "delete")
+
+## Suspicious PowerShell cmdlets
+There are numerous default PowerShell cmdlets that allow administrators to leverage WMI via PowerShell. Both adversaries and administrators use these cmdlets to query the operating system or execute commands, either locally or remotely. Cmdlets like Get-WMIObject are often used for reconnaissance.
+
+**Pseudocode** process == powershell.exe && command_includes ('invoke-wmimethod' || 'invoke-cimmethod' || 'get-wmiobject' || 'get-ciminstance' || 'wmiclass')
+
+**Kusto:**
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "powershell.exe" or FileName =~ "powershell.exe"
+| where InitiatingProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass") or ProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass")
+
+
+
+
