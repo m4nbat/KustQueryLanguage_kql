@@ -40,9 +40,9 @@ It’s almost always malicious when wmic.exe spawns as a child process of Micros
 **Pseudocode** parent_process == ('winword.exe' || 'excel.exe') && process == wmic.exe
 
 **Kusto:**
-DeviceProcessEvents
+`DeviceProcessEvents
 | where InitiatingProcessParentFileName in~ ("winword.exe", "excel.exe") or InitiatingProcessFileName in~ ("winword.exe", "excel.exe")
-| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"`
 
 ## WMI reconnaissance
 Reconnaissance is harder to detect because it looks very similar to normal admin behavior. Even so, we detect a relatively high volume of adversaries leveraging WMI to quickly gather domain information such as users, groups, or computers in the domain.
@@ -50,6 +50,6 @@ Reconnaissance is harder to detect because it looks very similar to normal admin
 **Pseudocode** process == wmic.exe && command_includes ('\ldap' || 'ntdomain')
 
 **Kusto:**
-DeviceProcessEvents
+`DeviceProcessEvents
 | where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
-| where InitiatingProcessCommandLine has_any ("\\ldap", "ntdomain") or ProcessCommandLine has_any ("\\ldap", "ntdomain")
+| where InitiatingProcessCommandLine has_any ("\\ldap", "ntdomain") or ProcessCommandLine has_any ("\\ldap", "ntdomain")`
