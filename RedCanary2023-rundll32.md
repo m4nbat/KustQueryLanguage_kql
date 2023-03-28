@@ -13,7 +13,8 @@ DLLs that are designed to be loaded by Regsvr32 are expected to have a DllRegist
 
 **kusto**
 
-
+`DeviceProcessEvents
+| where FileName =~ "rundll32.exe" and ProcessCommandLine contains "DllRegisterServer"`
 
 ## Rundll32 with suspicious process lineage
 
@@ -23,6 +24,8 @@ As is the case with most techniques in this report, it’s critical that you are
 
 **kusto**
 
+`DeviceProcessEvents
+| where InitiatingProcessFileName in~ ('winword.exe','excel.exe','msaccess.exe','lsass.exe','taskeng.exe','winlogon.exe','schtask.exe','regsvr32.exe','wmiprvse.exe','wsmprovhost.exe') and FileName =~ "rundll32.exe"`
 
 ## Suspicious export functionalities
 
@@ -31,6 +34,12 @@ Consider monitoring for instances of rundll32.exe running Windows native DLLs th
 **Pseudocode:** process == rundll32.exe || modload == comsvcs.dll && command_includes ('MiniDump' || '#24')
 
 **kusto**
+
+`let processEvents = DeviceProcessEvents
+| where FileName == "rundll32.exe" and ProcessCommandLine has_any ("MiniDump","#24");
+let moduleEvents = DeviceImageLoadEvents
+| where FileName =~ "comsvcs.dll" and InitiatingProcessCommandLine has_any ("MiniDump","#24");
+union isfuzzy=true processEvents,moduleEvents`
 
 
 ## Rundll injection into LSASS
@@ -41,6 +50,12 @@ The following pseudo-detector should help security teams detect instances where 
 
 **kusto**
 
+`DeviceProcessEvents
+| where InitiatingProcessParentFileName =~ "rundll32.exe" //and InitiatingProcessFileName =~ "lsass.exe"`
+
+`DeviceProcessEvents
+| where InitiatingProcessFileName =~ "rundll32.exe" and isempty(InitiatingProcessCommandLine)`
+
 
 ## Rundll32 without a command line
 
@@ -49,3 +64,10 @@ Rundll32 does not normally execute without corresponding command-line arguments 
 **Pseudocode:** process == rundll32.exe && command_includes (“”)* && has_network_connection || has_child_process
 
 **kusto**
+
+`DeviceNetworkEvents
+| where InitiatingProcessFileName =~ "rundll32.exe" and isempty(InitiatingProcessCommandLine)`
+
+`DeviceNetworkEvents
+| where InitiatingProcessFileName =~ "rundll32.exe" and isempty(InitiatingProcessCommandLine)`
+
