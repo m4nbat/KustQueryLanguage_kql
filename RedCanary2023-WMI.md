@@ -60,9 +60,9 @@ It’s not uncommon for ransomware operators to leverage WMI to delete volume sh
 **Pseudocode** process == wmic.exe && command_includes ('shadowcopy' && 'delete')
 
 **Kusto:**
-DeviceProcessEvents
+`DeviceProcessEvents
 | where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
-| where InitiatingProcessCommandLine has_all ("shadowcopy", "delete") or ProcessCommandLine has_all ("shadowcopy", "delete")
+| where InitiatingProcessCommandLine has_all ("shadowcopy", "delete") or ProcessCommandLine has_all ("shadowcopy", "delete")`
 
 ## Suspicious PowerShell cmdlets
 There are numerous default PowerShell cmdlets that allow administrators to leverage WMI via PowerShell. Both adversaries and administrators use these cmdlets to query the operating system or execute commands, either locally or remotely. Cmdlets like Get-WMIObject are often used for reconnaissance.
@@ -70,9 +70,9 @@ There are numerous default PowerShell cmdlets that allow administrators to lever
 **Pseudocode** process == powershell.exe && command_includes ('invoke-wmimethod' || 'invoke-cimmethod' || 'get-wmiobject' || 'get-ciminstance' || 'wmiclass')
 
 **Kusto:**
-DeviceProcessEvents
+`DeviceProcessEvents
 | where InitiatingProcessFileName =~ "powershell.exe" or FileName =~ "powershell.exe"
-| where InitiatingProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass") or ProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass")
+| where InitiatingProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass") or ProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass")`
 
 
 
