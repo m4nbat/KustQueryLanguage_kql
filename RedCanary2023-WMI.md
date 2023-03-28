@@ -50,4 +50,6 @@ Reconnaissance is harder to detect because it looks very similar to normal admin
 **Pseudocode** process == wmic.exe && command_includes ('\ldap' || 'ntdomain')
 
 **Kusto:**
-
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+| where InitiatingProcessCommandLine has_any ("\\ldap", "ntdomain") or ProcessCommandLine has_any ("\\ldap", "ntdomain")
