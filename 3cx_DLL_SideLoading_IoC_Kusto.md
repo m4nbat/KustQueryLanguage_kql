@@ -7,17 +7,20 @@ Sophos X-Ops is tracking a developing situation concerning a seeming supply-chai
 - https://news.sophos.com/en-us/2023/03/29/3cx-dll-sideloading-attack/
 
 
-let urlioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "sha256" | distinct data; 
+`let urlioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "sha256" | distinct data; 
 let sha256ioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "url" | distinct data; 
 let iocs = union urlioc, sha256ioc
 | extend iocs = replace_regex(data, @"\[\.\]",".");
 DeviceEvents
-| where RemoteUrl has_any (iocs) or SHA256 in~ (iocs)
+| where RemoteUrl has_any (iocs) or SHA256 in~ (iocs)`
 
-let urlioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "url" | extend iocs = replace_regex(data, @"\[\.\]",".") | distinct iocs; 
+`let urlioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "url" | extend iocs = replace_regex(data, @"\[\.\]",".") | distinct iocs; 
 DeviceEvents
-| where RemoteUrl has_any (urlioc)
+| where RemoteUrl has_any (urlioc)`
 
-let sha256ioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "sha256" | distinct data; 
+`let sha256ioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "sha256" | distinct data; 
 DeviceFileEvents
-| where SHA256 in~ (sha256ioc)
+| where SHA256 in~ (sha256ioc)`
+
+`DeviceTvmSoftwareInventory
+| where SoftwareName has_any ("3CXDesktopApp.exe", "3CX Desktop App")`
