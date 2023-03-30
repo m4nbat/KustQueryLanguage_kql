@@ -6,6 +6,7 @@ Sophos X-Ops is tracking a developing situation concerning a seeming supply-chai
 - https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/
 - https://news.sophos.com/en-us/2023/03/29/3cx-dll-sideloading-attack/
 
+## Queries (will work in MDE or Sentinel if ingesting the relevant MDE tables and logs)
 
 `let urlioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "sha256" | distinct data; 
 let sha256ioc = externaldata(indicator:string, data:string, note:string) [h@"https://raw.githubusercontent.com/sophoslabs/IoCs/master/3CX%20IoCs%202023-03.csv"] with(format="csv",ignoreFirstRecord=true) | where indicator =~ "url" | distinct data; 
