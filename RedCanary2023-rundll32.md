@@ -74,11 +74,9 @@ Rundll32 does not normally execute without corresponding command-line arguments 
 | where isempty(CommandLineArgs)`
 
 
-`DeviceNetworkEvents
-| where InitiatingProcessFileName =~ "rundll32.exe"
-//regex to extract the commandline following a windows binary as MDE commandline field usually contains "123.exe" or '123.exe' or 123.exe followed by a command.
-| where ProcessCommandLine matches regex "(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$"
-//regex to extract the commandline after the .exe
-| extend CommandLineArgs = extract("(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$", 2, ProcessCommandLine)
+`DeviceNetworkEvents 
+| where InitiatingProcessFileName =~ "rundll32.exe" //regex to extract the commandline following a windows binary as MDE commandline field usually contains "123.exe" or '123.exe' or 123.exe followed by a command. 
+| where InitiatingProcessCommandLine matches regex "(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$" //regex to extract the commandline after the .exe 
+| extend CommandLineArgs = extract("(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$", 2, InitiatingProcessCommandLine) 
 | where isempty(CommandLineArgs)`
 
