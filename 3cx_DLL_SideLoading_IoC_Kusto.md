@@ -25,3 +25,6 @@ DeviceFileEvents
 
 `DeviceTvmSoftwareInventory
 | where SoftwareName has_any ("3CXDesktopApp.exe", "3CX Desktop App")`
+
+`DeviceNetworkEvents
+| where InitiatingProcessFileName has_any ("3CXDesktopApp.exe","3CXDesktopApp","3CX")`
