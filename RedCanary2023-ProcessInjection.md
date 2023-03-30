@@ -28,4 +28,10 @@ DeviceNetworkEvents
 ## Injection into LSASS
 Since injection into lsass.exe is common, impactful, and frequently suspicious, it deserves to be called out individually. To that point, it would be worth your time to determine and enumerate the processes in your environment that routinely or occasionally obtain a handle to lsass.exe. Any access outside of the baseline should be treated as suspicious. 
 
+`TBD`
 
+
+## Suspected LSASS Dump
+
+`DeviceProcessEvents
+| where InitiatingProcessCommandLine has_all ("procdump", "lsass") or InitiatingProcessCommandLine has_all ("rundll32", "comsvcs", "MiniDump")`
