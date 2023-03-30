@@ -20,10 +20,12 @@ One major tell for process injection is the absence of command lines. Detecting 
 ## Network connections where there shouldn’t be
 Detecting purely on processes making network connections has the potential to generate a torrent of false positives. However, it can also identify suspicious injection activity—particularly if you tune the logic to filter out the eccentricities in your specific environment.
 
-let FileNames = datatable(name:string)["notepad.exe","calc.exe"];
+`let FileNames = datatable(name:string)["notepad.exe","calc.exe"];
 DeviceNetworkEvents
-| where InitiatingProcessFileName in~ (FileNames)
+| where InitiatingProcessFileName in~ (FileNames)`
 
 
 ## Injection into LSASS
 Since injection into lsass.exe is common, impactful, and frequently suspicious, it deserves to be called out individually. To that point, it would be worth your time to determine and enumerate the processes in your environment that routinely or occasionally obtain a handle to lsass.exe. Any access outside of the baseline should be treated as suspicious. 
+
+
