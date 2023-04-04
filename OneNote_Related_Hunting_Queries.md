@@ -6,7 +6,7 @@ The following detection analytic identifies OneNote as a parent process for susp
 
 
 `DeviceProcessEvents
-| where InitiatingProcessFileName =~ "onenote.exe" and FileName =~ "cmd.exe"`
+| where InitiatingProcessFileName =~ "onenote.exe" and FileName in~ ("cmd.exe","powershell.exe",wscript.exe,"jscript.exe")`
 
 
 ## OneNote Url connections (can be noisy) good for frequency analysis or enriching with IoA / IoC data
