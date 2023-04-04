@@ -13,3 +13,11 @@ The following detection analytic identifies OneNote as a parent process for susp
 
 `DeviceEvents
 | where ActionType =~ "BrowserLaunchedToOpenUrl" and InitiatingProcessFileName in~ ("onenote.exe") and RemoteUrl !startswith @"C:\Users\"`
+
+
+## Possible OneNote phishing using a shared link
+
+`let exclusionDomain = datatable(domain:string)["exampledomain.com"];
+EmailEvents
+| join EmailUrlInfo on NetworkMessageId
+| where Url has_all ("my.sharepoint.com","personal") and Subject has_all ("shared") and SenderFromDomain !in~ (exclusionDomain);`
