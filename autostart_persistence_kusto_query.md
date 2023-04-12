@@ -1,5 +1,7 @@
 # Autostart Persistence
 
+# Master Source: https://www.hexacorn.com/blog/2017/01/28/beyond-good-ol-run-key-all-parts/
+
 ## HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PeerDist\Extension\PeerdistDllName=peerdist.dll
 The wininet.dll library is using this location internally in its P2P_PEER_DIST_API::LoadPeerDist function.
 
@@ -31,3 +33,10 @@ DeviceRegistryEvents
 | extend RegistryChangeInfo = pack_dictionary("RegistryKey", RegistryKey, "Action Performed", ActionType, "Old Value", PreviousRegistryKey, "New Value", RegistryValueData)
 | summarize TotalKeysChanged = count(), RegistryInfo = make_set(RegistryChangeInfo) by DeviceName
 ```
+
+
+
+Persistence registry keys:
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\explorer\AutoplayHandlers\Handlers
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\StillImage\Registered Applications
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\StillImage\Events\STIProxyEvent
