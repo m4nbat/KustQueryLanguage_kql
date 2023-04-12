@@ -1,7 +1,6 @@
 # Autostart Persistence
 
-## HKLM\SOFTWARE\Microsoft\Windows NT\
-CurrentVersion\PeerDist\Extension\PeerdistDllName=peerdist.dll
+## HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PeerDist\Extension\PeerdistDllName=peerdist.dll
 The wininet.dll library is using this location internally in its P2P_PEER_DIST_API::LoadPeerDist function.
 
 ## source:
