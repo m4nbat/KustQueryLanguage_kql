@@ -1,10 +1,3 @@
-## Source:
-https://www.hexacorn.com/blog/2017/01/28/beyond-good-ol-run-key-all-parts/
-
-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\explorer\AutoplayHandlers\Handlers
-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\StillImage\Registered Applications
-HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\StillImage\Events\STIProxyEvent
-
 # Forensics on Standard Registry Run keys in Windows. Registry Run keys can be used to establish persistence on a device. 
 
 ## Source:
