@@ -4,6 +4,7 @@
 
 ## MDE
 
+```
 let iocList = dynamic ([
 "BOFNET",
 "SharpUp",
@@ -97,3 +98,102 @@ let iocList = dynamic ([
 DeviceEvents
 | extend module = parse_json(AdditionalFields).ModuleILPathOrName
 | where ActionType =~ "ClrUnbackedModuleLoaded" and module in~ (iocList) and InitiatingProcessFileName =~ "powershell.exe"
+```
+
+## Sentinel
+
+```
+let iocList = dynamic ([
+"BOFNET",
+"SharpUp",
+"ReflectedDelegate",
+'ADCollector',
+'ADCSPwn',
+'ADSearch',
+'ADFSDump',
+'AtYourService',
+'BetterSafetyKatz',
+'Certify',
+'EDD',
+'ForgeCert',
+'DeployPrinterNightmare',
+'Grouper2',
+'Group3r',
+'KrbRelay',
+'KrbRelayUp',
+'InveighZero',
+'LockLess',
+'PassTheCert',
+'PurpleSharp',
+'Rubeus',
+'SafetyKatz',
+'SauronEye',
+'scout',
+'SearchOutlook',
+'Seatbelt',
+'Sharp-SMBExec',
+'SharpAllowedToAct',
+'SharpAppLocker',
+'SharpBlock',
+'SharpBypassUAC',
+'SharpChisel',
+'SharpChrome',
+'SharpChromium',
+'SharpCloud',
+'SharpCOM',
+'SharpCrashEventLog',
+'SharpDir',
+'SharpDoor',
+'SharpDPAPI',
+'SharpDump',
+'SharpEDRChecker',
+'SharpExec',
+'SharPersist',
+'SharpFiles',
+'SharpGPOAbuse',
+'SharpHandler',
+'SharpHose',
+'SharpHound',
+'SharpKatz',
+'SharpLaps',
+'SharpMapExec',
+'SharpMiniDump',
+'SharpMove',
+'SharpPrinter',
+'SharpNoPSExec',
+'SharpRDP',
+'SharpReg',
+'SharpSCCM',
+'SharpSecDump',
+'SharpShares',
+'SharpSphere',
+'SharpSpray',
+'SharpStay',
+'SharpSvc',
+'SharpSniper',
+'SharpSQLPwn',
+'SharpTask',
+'SharpUp',
+'SharpView',
+'SharpWMI',
+'SharpWebServer',
+'SharpWifiGrabber',
+'SharpZeroLogon',
+'Shhmon',
+'Snaffler',
+'SqlClient',
+'StandIn',
+'StickyNotesExtract',
+'SweetPotato',
+'ThunderFox',
+'TruffleSnout',
+'TokenStomp',
+'Watson',
+'winPEAS',
+'WMIReg',
+'Whisker'
+]);
+DeviceEvents
+| extend module = parse_json(AdditionalFields).ModuleILPathOrName
+| where ActionType =~ "ClrUnbackedModuleLoaded" and module in~ (iocList) and InitiatingProcessFileName =~ "powershell.exe"
+```
