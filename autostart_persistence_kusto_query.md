@@ -3,7 +3,7 @@
 ## HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PeerDist\Extension\PeerdistDllName=peerdist.dll
 The wininet.dll library is using this location internally in its P2P_PEER_DIST_API::LoadPeerDist function.
 
-## source: https://www.hexacorn.com/blog/2022/01/23/beyond-good-ol-run-key-part-138/
+## Source: https://www.hexacorn.com/blog/2022/01/23/beyond-good-ol-run-key-part-138/
 <br>  
 Kusto inspiration from [@Bert-JanP](https://github.com/Bert-JanP/Hunting-Queries-Detection-Rules/edit/main/DFIR/DFE%20-%20Registry-Run-Keys-Forensics.md)
 
