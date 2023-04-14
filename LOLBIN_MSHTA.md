@@ -17,3 +17,24 @@ DeviceNetworkEvents
 DeviceImageLoadEvents
 | where (InitiatingProcessVersionInfoOriginalFileName =~ "mshta.exe" and tolower(InitiatingProcessFileName) != tolower(InitiatingProcessVersionInfoOriginalFileName))
 ```
+
+## MDE / Sentinel - MSHTA leveraging protocol handlers to execute code
+
+```
+let protocolHandlers = dynamic(["javascript","vbscript","about"]);
+//get renamed mshta.exe filenames and renamed mshta.exe filenames
+let mshtaFiles = DeviceImageLoadEvents
+| where InitiatingProcessVersionInfoOriginalFileName =~ "mshta.exe" | distinct InitiatingProcessFileName;
+DeviceProcessEvents
+| where InitiatingProcessFileName in~ (mshtaFiles) and InitiatingProcessCommandLine has_any (protocolHandlers)
+```
+
+
+
+
+
+
+
+
+
+
