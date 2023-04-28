@@ -11,7 +11,7 @@ let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpd
 let timeframe = 30d; //lookback period
 DeviceNetworkEvents 
 | where TimeGenerated > ago(timeframe)
-| where not(InitiatingProcessFileName has_any (excludedProcessFileNames)) and RemoteUrl has_any ("docs.google.com","docs.google.com/spreadsheets/","drive.google.com") and isnotempty(InitiatingProcessFileName)
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames)) and RemoteUrl has_any ("docs.google.com","docs.google.com/spreadsheets/","drive.google.com","docs.googleapis.com","drive.googleapis.com") and isnotempty(InitiatingProcessFileName)
 | summarize visitedURLs=make_set(RemoteUrl) by TenantId,
 ActionType,
 tostring(AdditionalFields),
@@ -55,5 +55,5 @@ InitiatingProcessParentCreationTime,
 InitiatingProcessCreationTime,
 SourceSystem,
 Type
-| where visitedURLs has_all ("docs.google.com","drive.google.com")
+| where visitedURLs has_all ("docs.google.com","drive.google.com") or visitedURLs has_all ("docs.googleapis.com","drive.googleapis.com")
 ```
