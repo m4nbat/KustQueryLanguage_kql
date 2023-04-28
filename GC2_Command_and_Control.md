@@ -55,5 +55,5 @@ InitiatingProcessParentCreationTime,
 InitiatingProcessCreationTime,
 SourceSystem,
 Type
-| where visitedURLs has_all ("docs.google.com","drive.google.com") or visitedURLs has_all ("docs.googleapis.com","drive.googleapis.com")
+// | where visitedURLs has_all ("docs.google.com","drive.google.com") or visitedURLs has_all ("docs.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the folder and sheets API.
 ```
