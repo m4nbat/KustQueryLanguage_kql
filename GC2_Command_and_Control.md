@@ -10,6 +10,7 @@
 
 ## MDE Kusto
 
+```
 //Processes interacting with Google Sheets (Has been known to be used for C2 communication) 
 // https://github.com/looCiprian/GC2-sheet
 //false positives - browsers going to the URL. Or a legitimate application that uses Google Sheets 
@@ -58,6 +59,7 @@ ReportId,
 InitiatingProcessParentCreationTime,
 InitiatingProcessCreationTime
 // | where visitedURLs has_all ("docs.google.com","drive.google.com") or visitedURLs has_all ("docs.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the folder and sheets API.
+```
 
 ## Sentinel Kusto
 ```
