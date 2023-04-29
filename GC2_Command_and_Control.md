@@ -15,10 +15,9 @@
 // https://github.com/looCiprian/GC2-sheet
 //false positives - browsers going to the URL. Or a legitimate application that uses Google Sheets 
 let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
-let timeframe = 30d; //lookback period
 DeviceNetworkEvents 
-| where Timestamp > ago(timeframe)
-| where not(InitiatingProcessFileName has_any (excludedProcessFileNames)) and RemoteUrl has_any ("docs.google.com","docs.google.com/spreadsheets/","drive.google.com","docs.googleapis.com","drive.googleapis.com") and isnotempty(InitiatingProcessFileName)
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
+| where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com") and isnotempty(InitiatingProcessFileName)
 | summarize visitedURLs=make_set(RemoteUrl) by ActionType,
 tostring(AdditionalFields),
 AppGuardContainerId,
@@ -59,6 +58,7 @@ ReportId,
 InitiatingProcessParentCreationTime,
 InitiatingProcessCreationTime
 // | where visitedURLs has_all ("docs.google.com","drive.google.com") or visitedURLs has_all ("docs.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the folder and sheets API.
+
 ```
 
 ## Sentinel Kusto
@@ -67,10 +67,9 @@ InitiatingProcessCreationTime
 // https://github.com/looCiprian/GC2-sheet
 //false positives - browsers going to the URL. Or a legitimate application that uses Google Sheets 
 let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
-let timeframe = 30d; //lookback period
 DeviceNetworkEvents 
-| where TimeGenerated > ago(timeframe)
-| where not(InitiatingProcessFileName has_any (excludedProcessFileNames)) and RemoteUrl has_any ("docs.google.com","docs.google.com/spreadsheets/","drive.google.com","docs.googleapis.com","drive.googleapis.com") and isnotempty(InitiatingProcessFileName)
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
+| where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com") and isnotempty(InitiatingProcessFileName)
 | summarize visitedURLs=make_set(RemoteUrl) by TenantId,
 ActionType,
 tostring(AdditionalFields),
