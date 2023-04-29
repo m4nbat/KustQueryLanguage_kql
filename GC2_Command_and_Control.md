@@ -18,46 +18,9 @@ let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpd
 DeviceNetworkEvents 
 | where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
 | where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com") and isnotempty(InitiatingProcessFileName)
-| summarize visitedURLs=make_set(RemoteUrl) by ActionType,
-tostring(AdditionalFields),
-AppGuardContainerId,
-DeviceId,
-DeviceName,
-InitiatingProcessAccountDomain,
-InitiatingProcessAccountName,
-InitiatingProcessAccountObjectId,
-InitiatingProcessAccountSid,
-InitiatingProcessAccountUpn,
-InitiatingProcessCommandLine,
-InitiatingProcessFileName,
-InitiatingProcessFolderPath,
-InitiatingProcessId,
-InitiatingProcessIntegrityLevel,
-InitiatingProcessMD5,
-InitiatingProcessParentFileName,
-InitiatingProcessParentId,
-InitiatingProcessSHA1,
-InitiatingProcessSHA256,
-InitiatingProcessTokenElevation,
-InitiatingProcessFileSize,
-InitiatingProcessVersionInfoCompanyName,
-InitiatingProcessVersionInfoProductName,
-InitiatingProcessVersionInfoProductVersion,
-InitiatingProcessVersionInfoInternalFileName,
-InitiatingProcessVersionInfoOriginalFileName,
-InitiatingProcessVersionInfoFileDescription,
-LocalIP,
-LocalIPType,
-LocalPort,
-Protocol,
-RemoteIP,
-RemoteIPType,
-RemotePort,
-RemoteUrl,
-ReportId,
-InitiatingProcessParentCreationTime,
-InitiatingProcessCreationTime
-// | where visitedURLs has_all ("docs.google.com","drive.google.com") or visitedURLs has_all ("docs.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the folder and sheets API.
+| summarize visitedURLs=make_list(RemoteUrl) by ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName
+| project ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName, visitedURLs, Connections=array_length(visitedURLs)
+| where visitedURLs contains "oauth2.googleapis.com" and visitedURLs has_any ("sheets.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the google drive folder and sheets API.
 
 ```
 
@@ -67,51 +30,10 @@ InitiatingProcessCreationTime
 // https://github.com/looCiprian/GC2-sheet
 //false positives - browsers going to the URL. Or a legitimate application that uses Google Sheets 
 let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
-DeviceNetworkEvents 
+DeviceNetworkEvents 
 | where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
 | where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com") and isnotempty(InitiatingProcessFileName)
-| summarize visitedURLs=make_set(RemoteUrl) by TenantId,
-ActionType,
-tostring(AdditionalFields),
-AppGuardContainerId,
-DeviceId,
-DeviceName,
-InitiatingProcessAccountDomain,
-InitiatingProcessAccountName,
-InitiatingProcessAccountObjectId,
-InitiatingProcessAccountSid,
-InitiatingProcessAccountUpn,
-InitiatingProcessCommandLine,
-InitiatingProcessFileName,
-InitiatingProcessFolderPath,
-InitiatingProcessId,
-InitiatingProcessIntegrityLevel,
-InitiatingProcessMD5,
-InitiatingProcessParentFileName,
-InitiatingProcessParentId,
-InitiatingProcessSHA1,
-InitiatingProcessSHA256,
-InitiatingProcessTokenElevation,
-InitiatingProcessFileSize,
-InitiatingProcessVersionInfoCompanyName,
-InitiatingProcessVersionInfoProductName,
-InitiatingProcessVersionInfoProductVersion,
-InitiatingProcessVersionInfoInternalFileName,
-InitiatingProcessVersionInfoOriginalFileName,
-InitiatingProcessVersionInfoFileDescription,
-LocalIP,
-LocalIPType,
-LocalPort,
-MachineGroup,
-Protocol,
-RemoteIP,
-RemoteIPType,
-RemotePort,
-RemoteUrl,
-ReportId,
-InitiatingProcessParentCreationTime,
-InitiatingProcessCreationTime,
-SourceSystem,
-Type
-// | where visitedURLs has_all ("docs.google.com","drive.google.com") or visitedURLs has_all ("docs.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the folder and sheets API.
+| summarize visitedURLs=make_list(RemoteUrl) by ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName
+| project ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName, visitedURLs, Connections=array_length(visitedURLs)
+| where visitedURLs contains "oauth2.googleapis.com" and visitedURLs has_any ("sheets.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the google drive folder and sheets API.
 ```
