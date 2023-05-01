@@ -7,6 +7,9 @@
 
 - https://github.com/looCiprian/GC2-sheet/
 - https://www.youtube.com/watch?v=n2dFlSaBBKo
+- https://services.google.com/fh/files/blogs/gcat_threathorizons_full_apr2023.pdf
+- https://www.tanium.com/blog/apt41-deploys-google-gc2-for-attacks-cyber-threat-intelligence-roundup/
+- https://www.bleepingcomputer.com/news/security/hackers-abuse-google-command-and-control-red-team-tool-in-attacks/ 
 
 ## MDE Kusto
 
