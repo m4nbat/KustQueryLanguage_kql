@@ -49,4 +49,16 @@ let processComWithGoogleAPI = DeviceNetworkEvents
 | distinct InitiatingProcessFileName;
 DeviceFileEvents
 | where ActionType == "FileCreated" and InitiatingProcessFileName in~ (processComWithGoogleAPI)
+
+## Find Processes and commandlines launched by the suspicious process communicating with Google API's
+
+```
+let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
+let processComWithGoogleAPI = DeviceNetworkEvents 
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
+| where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com","www.googleapis.com") and isnotempty(InitiatingProcessFileName)
+| distinct InitiatingProcessFileName;
+DeviceProcessEvents
+| where FileName in~ (processComWithGoogleAPI) or InitiatingProcessFileName in~ (processComWithGoogleAPI) or InitiatingProcessParentFileName in~ (processComWithGoogleAPI)
+```
 ```
