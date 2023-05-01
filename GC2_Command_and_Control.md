@@ -25,6 +25,7 @@ DeviceNetworkEvents
 ```
 
 ## Sentinel Kusto
+
 ```
 //Processes interacting with Google Sheets (Has been known to be used for C2 communication) 
 // https://github.com/looCiprian/GC2-sheet
@@ -53,6 +54,7 @@ DeviceFileEvents
 
 ## Find Processes and commandlines launched by the suspicious process communicating with Google API's
 
+```
 let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
 let processComWithGoogleAPI = DeviceNetworkEvents 
 | where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
@@ -60,5 +62,4 @@ let processComWithGoogleAPI = DeviceNetworkEvents
 | distinct InitiatingProcessFileName;
 DeviceProcessEvents
 | where FileName in~ (processComWithGoogleAPI) or InitiatingProcessFileName in~ (processComWithGoogleAPI) or InitiatingProcessParentFileName in~ (processComWithGoogleAPI)
-```
 ```
