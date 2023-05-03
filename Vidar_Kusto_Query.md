@@ -28,9 +28,9 @@ DeviceProcessEvents
 `//locate users that had interacted with the subdomain in the Vidar stealer log dump
 DeviceNetworkEvents
 | where RemoteUrl contains "stage.gk.heathrow.com"
-| summarize count() by InitiatingProcessAccountName, InitiatingProcessAccountUpn
+| summarize count() by InitiatingProcessAccountName, InitiatingProcessAccountUpn`
 
-//detects commandline associated with Vidar Cleanup
+`//detects commandline associated with Vidar Cleanup
 //Upon successful execution, the malware uses the following commands to uninstall itself from the victim’s device.
 //https://blog.cyble.com/2022/09/19/new-malware-campaign-targets-zoom-users/
 DeviceProcessEvents
