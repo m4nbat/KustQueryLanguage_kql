@@ -5,32 +5,70 @@
 - https://github.com/looCiprian/GC2-sheet
 
 
-# Title: Notion C2
+# GC2
+
+# Tactic: Comand and Contol
 
 # Source: 
 
-- https://github.com/mttaggart/OffensiveNotion
+- https://github.com/looCiprian/GC2-sheet/
+- https://www.youtube.com/watch?v=n2dFlSaBBKo
+- https://services.google.com/fh/files/blogs/gcat_threathorizons_full_apr2023.pdf
+- https://www.tanium.com/blog/apt41-deploys-google-gc2-for-attacks-cyber-threat-intelligence-roundup/
+- https://www.bleepingcomputer.com/news/security/hackers-abuse-google-command-and-control-red-team-tool-in-attacks/ 
 
-# Tactic: Command and Control
-
-# Technique: 
-
-# MDE and Sentinel Kusto Query
+## MDE Kusto
 
 ```
-let excludedProcesses = datatable(name:string)["browser1.exe","browser2.exe"]; //examples but check your environment first to remove false positives and use the filename and file path to reduce risk of false negative or evasion from the bad guys
-DeviceNetworkEvents
-| where RemoteUrl has "api.notion.com" and not (InitiatingProcessFileName has_any (excludedProcesses)) and InitiatingProcessVersionInfoCompanyName != "Notion Labs, Inc"
+//Processes interacting with Google Sheets (Has been known to be used for C2 communication) 
+// https://github.com/looCiprian/GC2-sheet
+//false positives - browsers going to the URL. Or a legitimate application that uses Google Sheets 
+let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
+DeviceNetworkEvents 
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
+| where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com","www.googleapis.com") and isnotempty(InitiatingProcessFileName)
+| summarize visitedURLs=make_list(RemoteUrl) by ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName
+| project ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName, visitedURLs, Connections=array_length(visitedURLs)
+| where visitedURLs contains "oauth2.googleapis.com" and visitedURLs has_any ("sheets.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the google drive folder and sheets API.
+
 ```
 
-# Sentinel query to identify commandlines associated with suspicious processes communicating with googleapis.com endpoints
+## Sentinel Kusto
+
 ```
-let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe", "swi_fc.exe"]; //add more browsers or mail clients where needed for exclusion 
-    DeviceNetworkEvents
-    | where RemoteUrl contains "notion.com"
-    | where not(InitiatingProcessFileName has_any (excludedProcessFileNames)) and InitiatingProcessVersionInfoCompanyName != "Notion Labs, Inc"
-    | extend joinkey = strcat(InitiatingProcessFileName, DeviceName, InitiatingProcessAccountName)
-    | join kind=leftouter (DeviceProcessEvents | extend  joinkey = strcat(InitiatingProcessParentFileName, DeviceName, InitiatingProcessAccountName) | summarize ProcessesRanByParent = make_set(InitiatingProcessCommandLine) by joinkey) on joinkey
-    | join kind=leftouter (DeviceFileEvents | where ActionType == "FileCreated" | extend  joinkey = strcat(InitiatingProcessParentFileName, DeviceName, InitiatingProcessAccountName) | summarize FilesCreated = make_set(FileName) by joinkey) on joinkey
-    | project TimeGenerated,  DeviceName, InitiatingProcessAccountName, InitiatingProcessCommandLine, InitiatingProcessFolderPath, FilesCreated, ProcessesRanByParent, LocalIP, RemoteIP, RemoteUrl
+//Processes interacting with Google Sheets (Has been known to be used for C2 communication) 
+// https://github.com/looCiprian/GC2-sheet
+//false positives - browsers going to the URL. Or a legitimate application that uses Google Sheets 
+let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
+DeviceNetworkEvents 
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
+| where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com","www.googleapis.com") and isnotempty(InitiatingProcessFileName)
+| summarize visitedURLs=make_list(RemoteUrl) by ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName
+| project ActionType, DeviceName, InitiatingProcessAccountName, InitiatingProcessParentFileName, InitiatingProcessFileName, visitedURLs, Connections=array_length(visitedURLs)
+| where visitedURLs contains "oauth2.googleapis.com" and visitedURLs has_any ("sheets.googleapis.com","drive.googleapis.com") // may allow for higher fidelity as the GC2 go application communicates to both the google drive folder and sheets API.
+```
+
+
+## Find files created by the process that created the suspicious connections
+
+```
+let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
+let processComWithGoogleAPI = DeviceNetworkEvents 
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
+| where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com","www.googleapis.com") and isnotempty(InitiatingProcessFileName)
+| distinct InitiatingProcessFileName;
+DeviceFileEvents
+| where ActionType == "FileCreated" and InitiatingProcessFileName in~ (processComWithGoogleAPI)
+```
+
+## Find Processes and commandlines launched by the suspicious process communicating with Google API's
+
+```
+let excludedProcessFileNames = datatable (browser:string)["teams.exe","GoogleUpdate.exe","outlook.exe","msedge.exe","chrome.exe","iexplorer.exe","brave.exe","firefox.exe"]; //add more browsers or mail clients where needed for exclusion 
+let processComWithGoogleAPI = DeviceNetworkEvents 
+| where not(InitiatingProcessFileName has_any (excludedProcessFileNames))
+| where RemoteUrl has_any ("oauth2.googleapis.com","sheets.googleapis.com","drive.googleapis.com","www.googleapis.com") and isnotempty(InitiatingProcessFileName)
+| distinct InitiatingProcessFileName;
+DeviceProcessEvents
+| where FileName in~ (processComWithGoogleAPI) or InitiatingProcessFileName in~ (processComWithGoogleAPI) or InitiatingProcessParentFileName in~ (processComWithGoogleAPI)
 ```
