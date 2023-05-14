@@ -31,15 +31,14 @@ DeviceFileEvents 
 DeviceFileEvents 
 | where (FolderPath endswith @'\jpsetup.exe' or FolderPath endswith @'\jpinst.exe')
 ```
- 
-```
+``` 
 // title: SNAKE Malware WerFault Persistence File Creation
 // description: Detects the creation of a filename named "WerFault.exe" in the WinSxS directory by a non system process. Which can be indicative of potential SNAKE malware activity
 // references:https://media.defense.gov/2023/May/09/2003218554/-1/-1/0/JOINT_CSA_HUNTING_RU_INTEL_SNAKE_MALWARE_20230509.PDF
 //Tactic: ADFSSISPackageExecutionComponentPhases
 DeviceFileEvents 
-| where ((FolderPath startswith @'C:\Windows\WinSxS\' and FolderPath endswith @'\WerFault.exe') and not (InitiatingProcessFolderPath startswith @'C:\Windows\Systems32\' or InitiatingProcessFolderPath startswith @'C:\Windows\SysWOW64\' or InitiatingProcessFolderPath startswith @'C:\Windows\WinSxS\'))
-``` 
+| where ((FolderPath startswith @'C:\Windows\WinSxS\' and FolderPath endswith @'\WerFault.exe') and not (InitiatingProcessFolderPath startswith @'C:\Windows\Systems32\' or InitiatingProcessFolderPath startswith @'C:\Windows\SysWOW64\' or InitiatingProcessFolderPath startswith @'C:\Windows\WinSxS\')) 
+```
 
 ```
 // Title: Potential SNAKE Malware Installation CLI Arguments Indicator
