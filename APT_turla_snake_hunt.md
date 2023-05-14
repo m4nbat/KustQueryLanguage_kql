@@ -15,6 +15,7 @@ DeviceRegistryEvents
 | where RegistryKey endswith @"SYSTEM\ControlSet001\Services\WerFaultSvc"
 ```
 
+```
 // Title: SNAKE Malware Kernel Driver File Indicator
 // Description: Detects SNAKE malware kernel driver file indicator
 // Tactic: Execution// References: https://media.defense.gov/2023/May/09/2003218554/-1/-1/0/JOINT_CSA_HUNTING_RU_INTEL_SNAKE_MALWARE_20230509.PDF
