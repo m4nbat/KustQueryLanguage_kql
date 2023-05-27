@@ -168,8 +168,8 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 | Name | Description | Link | Tag |
 |--|--|--|--|
-| 3CX DLL Side Loading |  |  |
-|  |  |  |  |
+| CVE-2023-23397 |  | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/CVE-2023-23397_kusto_queries.md |  |
+| CVE-2023-21554 |  | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/CVE-2023-21554-Queuejump.md |  |
 |  |  |  |  |
 |  |  |  |  |
 |  |  |  |  |
@@ -181,7 +181,7 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 | Name | Description | Link | Tag |
 |--|--|--|--|
-| 3CX DLL Side Loading |  |  |
+| 3CX DLL Side Loading |  | |  |
 |  |  |  |  |
 |  |  |  |  |
 |  |  |  |  |
@@ -194,7 +194,7 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 | Name | Description | Link | Tag |
 |--|--|--|--|
-| 3CX DLL Side Loading |  |  |
+| 3CX DLL Side Loading |  |  |  |
 |  |  |  |  |
 |  |  |  |  |
 |  |  |  |  |
