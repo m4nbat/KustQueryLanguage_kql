@@ -22,20 +22,19 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 ## Execution
 
-| Technique | Description | Link |
+| Technique | Description | Link | Tag |
 |--|--|--|--|
 | Turla Snake malware hunt queries | Potential SNAKE Malware Installation CLI Arguments Indicator | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md   |  |
 | Turla Snake malware hunt queries | SNAKE Malware Installer Name Indicators | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md  |  |
 | Turla Snake malware hunt queries | Potential SNAKE Malware Installation Binary Indicator | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md  |  |
-| Batloader Execution Procedures | Suspicious BatLoader Malware Execution by Use of Powershell (via cmdline)  |  | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/MDE_Execution_BatloaderTTPs.md |
-| Batloader Execution Procedures | Suspicious BatLoader Malware Execution by Use of Powershell (via cmdline)  |  | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/MDE_Execution_BatloaderTTPs.md | 
-| Batloader Execution Procedures | Possible Batloader Malware Execution by Gpg4Win Tool (via process creation) |  | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/MDE_Execution_BatloaderTTPs.md |  |
-|  |  |  |
+| Batloader Execution Procedures | Suspicious BatLoader Malware Execution by Use of Powershell (via cmdline)  |  https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/MDE_Execution_BatloaderTTPs.md |  | 
+| Batloader Execution Procedures | Suspicious BatLoader Malware Execution by Use of Powershell (via cmdline)  |  https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/MDE_Execution_BatloaderTTPs.md |  | 
+| Batloader Execution Procedures | Possible Batloader Malware Execution by Gpg4Win Tool (via process creation) | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/MDE_Execution_BatloaderTTPs.md |  |
 
 
 ## Persistence
 
-| Name | Description | Link |
+| Name | Description | Link | Tag  |
 |--|--|--|--|
 | Turla Snake malware hunt queries | SNAKE Malware Service Persistence | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md |  |
 | Turla Snake malware hunt queries | SNAKE Malware WerFault Persistence File Creation | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md |  |
