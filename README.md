@@ -24,9 +24,9 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 | Technique | Description | Link |
 |--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Turla Snake malware hunt queries | Potential SNAKE Malware Installation CLI Arguments Indicator | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md   |
+| Turla Snake malware hunt queries | SNAKE Malware Installer Name Indicators | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md  |
+| Turla Snake malware hunt queries | Potential SNAKE Malware Installation Binary Indicator | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md  |
 |  |  |  |
 |  |  |  |
 |  |  |  |
@@ -35,13 +35,12 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 ## Persistence
 
-| Technique | Description | Link |
+| Name | Description | Link |
 |--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Turla Snake malware hunt queries | SNAKE Malware Service Persistence | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md |
+| Turla Snake malware hunt queries | SNAKE Malware WerFault Persistence File Creation | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md |
+| Turla Snake malware hunt queries | SNAKE Malware Covert Store Registry Key | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md |
+| Turla Snake malware hunt queries | SNAKE Malware Service Persistence | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/APT_turla_snake_hunt.md  |
 |  |  |  |
 |  |  |  |
 |  |  |  |
@@ -155,6 +154,19 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 | Technique | Description | Link |
 |--|--|--|
 |  |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+
+## Uncategorised
+
+| Technique | Description | Link |
+|--|--|--|
+| 3CX DLL Side Loading |  | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/3cx_DLL_SideLoading_IoC_Kusto.md |
 |  |  |  |
 |  |  |  |
 |  |  |  |
