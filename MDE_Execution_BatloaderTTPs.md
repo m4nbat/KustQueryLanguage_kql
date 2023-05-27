@@ -1,4 +1,4 @@
-
+# Batloader Execution Procedures
 
 `//Suspicious BatLoader Malware Execution by Use of Powershell (via cmdline)
 //https://blogs.vmware.com/security/2022/11/batloader-the-evasive-downloader-malware.html
