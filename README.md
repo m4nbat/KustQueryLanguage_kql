@@ -8,16 +8,16 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 ## Initial Access
 
-| Technique | Description | Link |
+| Technique | Description | Link | Tag |
 |--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 
 ## Execution
@@ -47,130 +47,158 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 
 ## Privilege Escalation
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Defense Evasion
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Credential Access
 
-| Technique | Description | Link |
+| Technique | Description | Link | Tag |
 |--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Discovery
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Lateral Movement
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Collection
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Command and Control
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Exfiltration
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
 
 ## Impact
 
-| Technique | Description | Link |
-|--|--|--|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Technique | Description | Link | Tag |
+|--|--|--|--|
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+|  |  |  | |
+
+# Other Mappings
+
+## CVE's
+
+| Name | Description | Link | Tag |
+|--|--|--|--|
+| 3CX DLL Side Loading |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+
+## APT
+
+| Name | Description | Link | Tag |
+|--|--|--|--|
+| 3CX DLL Side Loading |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
 
 ## Uncategorised
 
-| Technique | Description | Link |
-|--|--|--|
-| 3CX DLL Side Loading |  | https://github.com/m4nbat/KustQueryLanguage_kql/blob/main/3cx_DLL_SideLoading_IoC_Kusto.md |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Name | Description | Link | Tag |
+|--|--|--|--|
+| 3CX DLL Side Loading |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
+|  |  |  |  |
