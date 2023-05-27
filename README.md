@@ -73,7 +73,7 @@ Cyber Defence related kusto queries for use in Azure Sentinel and Defender advan
 ## Credential Access
 
 | Technique | Description | Link | Tag |
-|--|--|--|
+|--|--|--|--|
 |  |  |  | |
 |  |  |  | |
 |  |  |  | |
