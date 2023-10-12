@@ -4,6 +4,7 @@
 
 # Port and HTTP request based detection
 
+```
 DeviceNetworkEvents
 | where TimeGenerated > ago(60d)
 | extend HTTPMethod = tostring(AdditionalFields.method)
@@ -19,3 +20,4 @@ DeviceNetworkEvents
 | extend uri = tostring(AdditionalFields.uri)
 | extend user_agent = tostring(AdditionalFields.user_agent)
 | extend version_ = tostring(AdditionalFields.version)
+```
