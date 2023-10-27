@@ -5,6 +5,7 @@ Execution of python scripts via python installer binary
 
 
 # Source:
+@kostatsale
 
 # MITRE ATT&CK
 -  Defense Evasion
