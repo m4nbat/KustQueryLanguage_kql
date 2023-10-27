@@ -34,4 +34,10 @@ DeviceNetworkEvents
 | where RemoteUrl has_any (clearFakeDomains)
 ```
 
-
+```
+//IOC: ClearFake - Possible connection to ClearFake C2 Infrastructure network connetcion to IPs
+let clearFakeIps = externaldata(domain:string)[h@"https://raw.githubusercontent.com/m4nbat/ioc_lists/main/clearFakeIocs.txt"]
+with(format="txt");
+DeviceNetworkEvents
+| where RemoteIP has_any (clearFakeIPs)
+```
