@@ -10,7 +10,8 @@ Possible MS Teams phishing attempt
 - Phishing: Malicious Link
 
 # Source
-Peter Lim
+- Steven Lim
+- https://www.linkedin.com/pulse/defending-against-zip-domain-phishing-attack-microsoft-steven-lim?utm_source=share&utm_medium=member_android&utm_campaign=share_via
 
 # Query
 
