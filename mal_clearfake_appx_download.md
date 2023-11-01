@@ -2,7 +2,7 @@
 ClearFake Detection Analytics
 
 # Description
-Queries to detect initial download of .appx file
+Queries to detect initial creation of .appx file
 
 # Source
 - https://blog.sekoia.io/clearfake-a-newcomer-to-the-fake-updates-threats-landscape/
