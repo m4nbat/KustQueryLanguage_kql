@@ -13,8 +13,7 @@ Queries to detect initial download of .appx file
 # Queries for sentinel and MDE
 
 ```
-//TTP: ClearFake - Possible download of malicious .appx file
-let browsers = datatable(name:string)["edge.exe","chrome.exe","firefox.exe"];
+//TTP: ClearFake - Possible creation of malicious .appx file
 DeviceFileEvents
-| where ActionType in~ ("FileCreated","FileRenamed") and InitiatingProcessFileName has_any (browsers) and FileName endswith ".appx"
+| where InitiatingProcessFileName =~ "Explorer.exe" and FileName in~ ("AppxProvider.dll","AppxManifest.xml")
 ```
