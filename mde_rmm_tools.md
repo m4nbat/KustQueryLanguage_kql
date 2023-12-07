@@ -5,7 +5,9 @@ RMM Tool Hunt Queries
 Analytics to hunt for RMM tool usage in the environment
 
 # MITRE ATT&CK
-T1219 - Remote Access Software
+TA0011: Command and Control
+T1219: Remote Access Software
+T1133: External Remote Services
 
 # MDE Queries
 
