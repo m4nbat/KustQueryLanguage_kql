@@ -9,7 +9,7 @@
 |  T1127.001 | Trusted Developer Utilities Proxy Execution: MSBuild | [MSBuild](https://attack.mitre.org/techniques/T1562/001/)|
 
 #### Description
-Detection opportunity: Abusing PowerShell to disable Defender components
+Detection opportunity: MSBuild without commands
 
 In some detections, we observed the Microsoft Build Engine (msbuild.exe) making outbound network connections to IPs associated with the ArechClient2 remote access tool. In general, it is suspicious for msbuild.exe to execute without a corresponding command line, which is precisely what we observed here. Simply looking for execution of msbuild.exe without a corresponding command line and examining surrounding activity for suspicious network connections and child processes could help detect this threat.
 
