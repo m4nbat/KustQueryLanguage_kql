@@ -24,7 +24,7 @@ FIN7 have been observed performing this behaviour in recent intrusions. FIN7 act
 - **Website:**
 
 #### References
-- [https://kqlquery.com/](https://redcanary.com/blog/msix-installers/)
+- [redcanary](https://redcanary.com/blog/msix-installers/)
 
 ## Defender For Endpoint
 ```KQL
