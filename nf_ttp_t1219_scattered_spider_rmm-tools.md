@@ -1,4 +1,4 @@
-# *  Scattered Spider RMM Tool Presence Detection*
+# Scattered Spider RMM Tool Presence Detection
 
 ## Query Information
 
