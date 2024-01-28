@@ -22,8 +22,8 @@ The main risk addressed by this rule is the illicit use of RMM tools for unautho
 - **Website:**
 
 #### References
-- [CISA Advisory on RM Tools](https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-320a)
-- [Microsoft Security Blog on RM Tool Abuse](https://www.microsoft.com/en-us/security/blog/2023/10/25/octo-tempest-crosses-boundaries-to-facilitate-extortion-encryption-and-destruction/)
+- [CISA Advisory on Scattered Spider](https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-320a)
+- [Microsoft Security Blog on Scattered Spider](https://www.microsoft.com/en-us/security/blog/2023/10/25/octo-tempest-crosses-boundaries-to-facilitate-extortion-encryption-and-destruction/)
 
 ## Defender For Endpoint
 ```KQL
