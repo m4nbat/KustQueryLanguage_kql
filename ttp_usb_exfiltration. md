@@ -1,7 +1,33 @@
+# * Possible Exfiltration via USB Detection*
 
+## Query Information
 
+#### MITRE ATT&CK Technique(s)
 
-```
+| Technique ID | Title                             | Link                                                  |
+|--------------|-----------------------------------|-------------------------------------------------------|
+| T1052.001   | Exfiltration Over Physical Medium: Exfiltration over USB| [Exfiltration Over Physical Medium: Exfiltration over USB](https://attack.mitre.org/techniques/T1052/001) |
+
+#### Description
+Adversaries such as insiders have been known to exfilrate data via removable media such as USB devices. 
+
+#### Risk
+Removable media including USB can present a data loss risk to organisations.
+
+#### Author 
+- **Name:** Nathan Webb
+- **Github:**
+- **Twitter:**
+- **LinkedIn:** [https://www.linkedin.com/in/nathanjohnwebb](htps://www.linkedin.com/in/nathanjohnwebb) 
+- **Website:**
+
+#### References
+- [Threat hunt] Detecting Possible USB Data Exfiltration
+https://www.linkedin.com/pulse/threat-hunt-detecting-possible-usb-data-exfiltration-nathan-webb-t3ode?utm_source=share&utm_medium=member_android&utm_campaign=share_via
+
+## Defender For Endpoint
+
+```KQL
 let LookBackPeriod=14d; // How long to look back for USB activity
 let DetectionPeriod=1d;
 let DeviceConnectedCopiedWindow=1h; // adjust to have a longer time range between device connected and files copied
