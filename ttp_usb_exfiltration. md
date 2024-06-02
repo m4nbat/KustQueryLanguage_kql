@@ -1,5 +1,6 @@
 
-```KQL
+```
+KQL
 let LookBackPeriod=14d; // How long to look back for USB activity
 let DetectionPeriod=1d;
 let DeviceConnectedCopiedWindow=1h; // adjust to have a longer time range between device connected and files copied
