@@ -46,6 +46,31 @@ victims
 ```
 
 ```KQL
+// Query recent victims and add the infostealer data results
+let victims = externaldata(country:string,
+ activity:string,
+ description:string,
+ discovered:datetime,
+ group_name:string,
+ post_title:string,
+ post_url:string,
+ published:datetime,
+ screenshot:string,
+ website:string,
+ infostealer:dynamic)
+[h@"https://api.ransomware.live/recentvictims"]
+with(format="multijson",ignoreFirstRecord=false);
+victims
+| extend infostealer_employees_ = tostring(infostealer.employees)
+| extend infostealer_employees_url_ = tostring(infostealer.employees_url)
+| extend infostealer_thirdparties_ = tostring(infostealer.thirdparties)
+| extend infostealer_update_ = tostring(infostealer.update)
+| extend infostealer_users_ = tostring(infostealer.users)
+| extend infostealer_users_url_ = tostring(infostealer.users_url)
+| project-away infostealer
+```
+
+```KQL
 //query to detect possible third party compromise via leak site data
 let clientkeyword = datatable(name:string)["client1","client2","client3","axip","elutia"]; //add clients
 let supplierkeyword = datatable(supplier:string)["supplier1","supplier2","supplier3","merchant.id"]; //add suppliers
