@@ -82,3 +82,34 @@ with(format="multijson",ignoreFirstRecord=false);
 all_victims
 ```
 
+```KQL
+//Query to bring back all victims data from ransomware.live
+let all_victims = externaldata(["date"]:datetime,
+        victim:string,
+        domain:string,
+        country:string,
+        summary:string,
+        title:string,
+        url:string,
+        added:datetime)
+[h@"https://api.ransomware.live/allcyberattacks"]
+with(format="multijson",ignoreFirstRecord=false);
+all_victims
+```
+
+```KQL
+// Query group information
+let groups = externaldata(
+    name: string,
+    captcha: bool,
+    javascript_render: string,
+    locations: dynamic,
+    meta: string, 
+    parser: bool,
+    profile: dynamic)
+    [h@"https://api.ransomware.live/groups"]
+    with(format="multijson", ignoreFirstRecord=false);
+groups
+| mv-expand locations
+| where locations.available != false
+```
