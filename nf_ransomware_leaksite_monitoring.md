@@ -123,6 +123,25 @@ all_victims
 ```
 
 ```KQL
+//Viusalise victim data trending over time
+let victims = externaldata(
+        victim:string,
+        country:string,
+        domain:string,
+        title:string,
+        summary:string,
+        url:string,
+        added:datetime,)
+[h@"https://api.ransomware.live/allcyberattacks"]
+with(format="multijson",ignoreFirstRecord=false);
+victims
+| make-series Count=count() default=0 on added step 1d
+|extend (RSquare, Splitldx, Variance, RVariance, TrendLine)=series_fit_2lines(Count)
+| project added, Count, TrendLine
+| render timechart
+```
+
+```KQL
 // Query group information
 let groups = externaldata(
     name: string,
