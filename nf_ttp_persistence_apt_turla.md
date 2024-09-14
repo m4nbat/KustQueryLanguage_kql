@@ -122,8 +122,8 @@ This query monitors DeviceEvents to detect service installations involving WerFa
 
 
 
-### Query 3 - Detect SNAKE Malware Persistence via Registry Events
-#### Query Information
+### Query 2 - Detect SNAKE Malware Persistence via Registry Events
+#### Description
 This query detects modifications in the Windows registry related to the service WerFaultSvc used by Snake malware.
 
 ```KQL
@@ -137,7 +137,7 @@ DeviceEvents
 | where ServiceName contains 'WerFaultSvc' 
 | where FolderPath startswith 'C:\Windows\WinSxS\' and FileName =~ '\WerFault.exe'
 ```
-### Query 4 - Alternative Detection via Registry Events
+### Query 3 - Alternative Detection via Registry Events
 #### Query Information
 Another query for detecting registry changes related to the WerFaultSvc service, monitoring registry paths used by the Snake malware for persistence.
 
@@ -145,3 +145,20 @@ Another query for detecting registry changes related to the WerFaultSvc service,
 DeviceRegistryEvents
 | where RegistryKey endswith @"SYSTEM\ControlSet001\Services\WerFaultSvc"
 ```
+
+### Query 4: SNAKE Malware Covert Store Registry Key
+### Description: 
+Detects any registry event that targets the key 'SECURITY\Policy\Secrets\n' which is a key related to SNAKE malware as described by CISA
+
+```KQL
+// References: https://media.defense.gov/2023/May/09/2003218554/-1/-1/0/JOINT_CSA_HUNTING_RU_INTEL_SNAKE_MALWARE_20230509.PDF
+// Tactic: Persistence
+DeviceRegistryEvents 
+| where RegistryKey endswith @'SECURITY\Policy\Secrets\n'
+```
+
+
+
+
+
+
