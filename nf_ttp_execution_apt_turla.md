@@ -21,12 +21,12 @@ Detects execution-related activities tied to the SNAKE malware as reported by CI
 #### Risk
 The detection covers the execution of potentially harmful payloads and processes associated with the SNAKE malware. Attackers may leverage this for privilege escalation and to maintain persistence within compromised systems.
 
-#### Author <Optional>
-- **Name:** N/A
-- **Github:** N/A
-- **Twitter:** N/A
-- **LinkedIn:** N/A
-- **Website:** N/A
+#### Author 
+- **Name:** Gavin Knapp
+- **Github:** [https://github.com/m4nbat](https://github.com/m4nbat)
+- **Twitter:** [https://twitter.com/knappresearchlb](https://twitter.com/knappresearchlb)
+- **LinkedIn:** [https://www.linkedin.com/in/grjk83/](https://www.linkedin.com/in/grjk83/)
+- **Website:**
 
 #### References
 - [CISA Report on Snake Malware](https://media.defense.gov/2023/May/09/2003218554/-1/-1/0/JOINT_CSA_HUNTING_RU_INTEL_SNAKE_MALWARE_20230509.PDF)
