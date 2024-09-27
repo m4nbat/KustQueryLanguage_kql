@@ -9,7 +9,18 @@
 |  |  | |
 
 #### Description
-Hunt queries for scoping vulnerable devices with the Linux CUPS Vulnerability
+Hunt queries for scoping vulnerable devices with the Linux CUPS Vulnerability.
+
+From SANS ISC:
+_"CUPS may use "filters", executables that can be used to convert documents. The part responsible ("cups-filters") accepts unverified data that may then be executed as part of a filter operation. An attacker can use this vulnerability to inject a malicious "printer". The malicious code is triggered once a user uses this printer to print a document. This has little or no impact if CUPS is not listening on port 631, and the system is not used to print documents (like most servers). An attacker may, however, be able to trigger the print operation remotely. On the local network, this is exploitable via DNS service discovery. A proof of concept exploit has been made available."_
+
+There is no patch right now. Disable and remove cups-browserd (you probably do not need it anyway). Update CUPS as updates become available. Stop UDP traffic on Port 631.
+
+Related CVE's
+- CVE-2024-47176
+- CVE-2024-47076
+- CVE-2024-47115
+- CVE-2024-47177
 
 #### Risk
 This vulnerability should be remediated on internet facing devices before proof of concept exploits are released and used in mass exploitation activity by threat actors.
@@ -23,6 +34,7 @@ This vulnerability should be remediated on internet facing devices before proof 
 
 #### References
 - https://www.evilsocket.net/2024/09/26/Attacking-UNIX-systems-via-CUPS-Part-I/
+  https://isc.sans.edu/diary/Patch%20for%20Critical%20CUPS%20vulnerability%3A%20Don%27t%20Panic/31302
 
 ## Defender For Endpoint
 ```KQL
