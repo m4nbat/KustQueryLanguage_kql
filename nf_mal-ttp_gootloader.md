@@ -28,5 +28,5 @@ This detection helps identify potential execution of malicious scripts from a us
 ## Defender For Endpoint
 ```KQL
 DeviceProcessEvents
-| where FileName == "wscript.exe"
+| where FileName =~ "wscript.exe"
 | where ProcessCommandLine has @"\appdata\" and ProcessCommandLine endswith ".js"
