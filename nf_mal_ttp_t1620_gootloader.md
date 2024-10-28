@@ -22,6 +22,7 @@ Reflective loading of assemblies is a technique often used by malicious actors t
 - **LinkedIn:** [https://www.linkedin.com/in/grjk83/](https://www.linkedin.com/in/grjk83/)
 
 #### References
+- https://redcanary.com/wp-content/uploads/2022/05/Gootloader.pdf
 - https://kqlquery.com/
 - https://github.com/Bert-JanP/Hunting-Queries-Detection-Rules
 
