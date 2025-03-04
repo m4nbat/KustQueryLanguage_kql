@@ -1,0 +1,18 @@
+
+````kql
+let TANames = datatable(PreviousName: string)[
+"Typhoon",
+"Sandstorm",
+"Rain",
+"Sleet",
+"Blizzard",
+"Hail",
+"Dust",
+"Cyclone",
+"Tempest",
+"Tsunami",
+"Flood",
+"Storm-"];
+SecurityAlert
+| where AlertName has_any (TANames)
+  ```
