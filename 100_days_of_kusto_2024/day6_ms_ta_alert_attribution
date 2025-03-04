@@ -1,5 +1,11 @@
+# Day 6 - Search alerts for Microsoft Threat Actor names
 
-````kql
+## Description
+
+The below query provides an example of how to search alerts for Microsoft Threat Actor names. This can be used to understand if there have been any alerts related to Microosft TAs in your environement.
+
+``` KQL
+
 let TANames = datatable(PreviousName: string)[
 "Typhoon",
 "Sandstorm",
@@ -15,4 +21,5 @@ let TANames = datatable(PreviousName: string)[
 "Storm-"];
 SecurityAlert
 | where AlertName has_any (TANames)
-  ```
+ 
+```
