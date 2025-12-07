@@ -1,6 +1,6 @@
 
 ## PowerShell creating external network connections followed by commands (may be noisy)
-
+```
 DeviceNetworkEvents 
 | where InitiatingProcessParentFileName != @"SenseIR.exe"
 | where ActionType == 'ConnectionSuccess' 
@@ -18,9 +18,10 @@ DeviceProcessEvents
 | project ChildProcessStartTime = Timestamp, ChildProcessName = FileName, ChildProcessSHA1 = SHA1, ChildProcessCommandline = ProcessCommandLine, InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFileName, InitiatingProcessId, DeviceName
 ) on InitiatingProcessCommandLine, InitiatingProcessCreationTime, InitiatingProcessFileName, InitiatingProcessId, DeviceName
 | project DeviceName, NetConTimestamp, RemoteIP, RemoteUrl,InitiatingProcessParentFileName,InitiatingProcessFileName, InitiatingProcessCommandLine, PsCommandTimestamp, PSCommand, ChildProcessStartTime, ChildProcessName, ChildProcessSHA1, ChildProcessCommandline
+```
 
 ## Powershell creating .exe
-
+```
 DeviceFileEvents 
 | where InitiatingProcessParentFileName != @"SenseIR.exe"
 | where InitiatingProcessFileName has_any ("pwsh.exe","powershell.exe")
@@ -32,7 +33,7 @@ DeviceProcessEvents
 | project DeviceName, SHA1, FileName, ProcessCreationTimestamp = Timestamp, ProcessCommandLine, FolderPath, ProcessCreationParentName = InitiatingProcessFileName, ProcessCreationParentCmdline = InitiatingProcessCommandLine, ProcessCreationParentFolderPath = InitiatingProcessFolderPath, ProcessCreationGrandParentName = InitiatingProcessParentFileName
 ) on FileName, SHA1, DeviceName
 | project DeviceName, FileCreationTimestamp, FileName, SHA1, ProcessCreationTimestamp, FolderPath, ProcessCommandLine, ProcessCreationParentName, ProcessCreationParentCmdline, ProcessCreationParentFolderPath, ProcessCreationGrandParentName
-
+```
 
 ## PowerShell DLLs being called by non-PowerShell processes
 
