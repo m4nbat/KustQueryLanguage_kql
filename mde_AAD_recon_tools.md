@@ -1,14 +1,35 @@
-# Title
-AAD Recon Detection Queries
+# AAD Recon Detection Queries
 
-# Sources
-https://cloudbrothers.info/en/detect-threats-microsoft-graph-logs-part-1/
+## Query Information
 
-# Queries
+#### MITRE ATT&CK Technique(s)
 
-## Azure Hound UserAgent
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1087.004 | Account Discovery: Cloud Account | [Cloud Account](https://attack.mitre.org/techniques/T1087/004/) |
+| T1069.003 | Permission Groups Discovery: Cloud Groups | [Cloud Groups](https://attack.mitre.org/techniques/T1069/003/) |
 
-```
+#### Description
+Detection queries for Azure Active Directory (AAD) reconnaissance tools such as AzureHound and PurpleKnight. These tools enumerate AAD objects including users, groups, service principals, applications, and role assignments via the Microsoft Graph API.
+
+#### Risk
+Attackers use AAD enumeration tools to map out an organisation's cloud identity infrastructure, identify privileged accounts and roles, and plan lateral movement or privilege escalation paths. Detecting these tools early can prevent further compromise of the cloud environment.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- https://cloudbrothers.info/en/detect-threats-microsoft-graph-logs-part-1/
+
+## Sentinel
+
+### Azure Hound UserAgent
+
+```KQL
 MicrosoftGraphActivityLogs
 | where UserAgent has "azurehound"
 | extend ObjectId = iff(isempty(UserId), ServicePrincipalId, UserId)
@@ -17,9 +38,9 @@ MicrosoftGraphActivityLogs
 
 ```
 
-## AzureHound Behavioural
+### AzureHound Behavioural
 
-```
+```KQL
   let AzureHoundGraphQueries = dynamic([
       "https:/graph.microsoft.com/version/servicePrincipals/<UUID>/owners",
       "https:/graph.microsoft.com/version/groups/<UUID>/members",
@@ -74,9 +95,9 @@ MicrosoftGraphActivityLogs
 
 ```
 
-## PurpleKnight Behavioral
+### PurpleKnight Behavioral
 
-```
+```KQL
 let GraphQueries = dynamic([ "https:/graph.microsoft.com/version/servicePrincipals/<UUID>/appRoleAssignments", "https:/graph.microsoft.com/version/roleManagement/directory/roleEligibilityScheduleInstances", "https:/graph.microsoft.com/version/servicePrincipals/", "https:/graph.microsoft.com/version/roleManagement/directory/roleAssignments", "https:/graph.microsoft.com/version/users/<UUID>/memberOf", "https:/graph.microsoft.com/version/directoryRoles/roleTemplateId=<UUID>/members", "https:/graph.microsoft.com/version/directoryObjects/<UUID>", "https:/graph.microsoft.com/version/identity/conditionalAccess/policies", "https:/graph.microsoft.com/version/policies/authorizationPolicy", "https:/graph.microsoft.com/version/policies/identitySecurityDefaultsEnforcementPolicy", "https:/graph.microsoft.com/version/organization", "https:/graph.microsoft.com/version/users", "https:/graph.microsoft.com/version/reports/credentialUserRegistrationDetails", "https:/graph.microsoft.com/version/directoryRoles", "https:/graph.microsoft.com/version/identity/conditionalAccess/namedLocations", "https:/graph.microsoft.com/version/auditLogs/signIns", "https:/graph.microsoft.com/version/$batch", "https:/graph.microsoft.com/version/roleManagement/directory/roleAssignmentScheduleRequests", "https:/graph.microsoft.com/version/directory/administrativeUnits", "https:/graph.microsoft.com/version/settings", "https:/graph.microsoft.com/version/applications", "https:/graph.microsoft.com/version/authenticationMethodsPolicy/authenticationMethodConfigurations/MicrosoftAuthenticator", "https:/graph.microsoft.com/version/servicePrincipals" ]);
 let PotentialMaliciousGraphCalls = materialize (
 MicrosoftGraphActivityLogs

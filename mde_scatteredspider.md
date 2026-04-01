@@ -1,24 +1,42 @@
-# Title
-Scattered Spider Hunt Queries
+# Scattered Spider Hunt Queries
 
-# Description
+## Query Information
 
+#### MITRE ATT&CK Technique(s)
 
-# Source
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1219 | Remote Access Software | [Remote Access Software](https://attack.mitre.org/techniques/T1219/) |
+| T1567 | Exfiltration Over Web Service | [Exfiltration Over Web Service](https://attack.mitre.org/techniques/T1567/) |
+| T1098 | Account Manipulation | [Account Manipulation](https://attack.mitre.org/techniques/T1098/) |
 
+#### Description
+Hunt queries targeting Scattered Spider (also known as UNC3944) TTPs including RMM tool presence, exfiltration to known domains, Azure ARC-based persistence, and defense evasion via conditional access policy manipulation.
 
-# MITRE ATT&CK
+#### Risk
+Scattered Spider is a financially motivated threat actor known for social engineering, SIM swapping, and deploying ransomware. They abuse legitimate RMM tools, Azure services, and cloud infrastructure to maintain persistence and exfiltrate data.
 
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
 
-## RM Tool Presence
+#### References
+- https://learn.microsoft.com/en-us/azure/azure-arc/servers/agent-overview
 
-```
+## Defender For Endpoint
+
+### RMM Tool Presence
+
+```KQL
 let RMMToolPaths = datatable(toolPath:string)[ "\\NinjaRMMAgentPatcher.exe", "\\NinjaRMMAgent\\NinjaRMMAgentPatcher.exe", "C:\\ProgramData\\NinjaRMMAgent\\ninjarmm-cli.exe", "\\NinjaRMMAgent.exe", "\\NinjaRMMAgent\\NinjaRMMAgent.exe", "\\ATERA Networks\\AteraAgent\\AteraAgent.exe", "\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageNetworkDiscoveryWG\\AgentPackageNetworkDiscoveryWG.exe", "\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageAgentInformation\\AgentPackageAgentInformation.exe", "\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageSTRemote\\AgentPackageSTRemote.exe", "\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageFileExplorer\\AgentPackageFileExplorer.exe", "\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageMonitoring\\AgentPackageMonitoring.exe", "\\ATERA Networks\\AteraAgent\\Packages\\AgentPackageRuntimeInstaller\\AgentPackageRuntimeInstaller.exe", "C:\\Windows\\SysWOW64\\config\\systemprofile\\AppData\\Local\\GoToAssist Remote Support Applet\\", "\\AppData\\Local\\GoToAssist Remote Support Applet\\", "\\LogMeIn\\GoToAssist Corporate\\", "\\GoToMeeting\\", "\\AppData\\Local\\GoToMeeting\\", "\\AppData\\Local\\GoToMeeting\\", "\\GoToAssist Remote Support Customer\\", "\\GoToAssist Remote Support Customer\\", "\\AppData\\Local\\GoTo Resolve Applet\\", "\\GoToAssist Remote Support Unattended\\", "\\GoToAssist Remote Support Unattended\\", "\\AppData\\Local\\goto-updater\\pending\\GoToSetup-", "\\GoToMeeting\\", "\\AppData\\Local\\GoToAssist Remote Support Applet\\", "\\AppData\\Local\\GoToMeeting\\", "C:\\ManageEngine\\DesktopCentralMSP_Server\\jre\\bin\\java.exe", "C:\\ManageEngine\\ADManager Plus\\jre\\bin\\java.exe", "\\ManageEngine\\PMP\\tools\\archiver\\windows\\x86-64\\7za.exe", "C:\\ManageEngine\\elasticsearch\\jre\\bin\\java.exe", "\\ManageEngine\\PMP\\jre\\bin\\java.exe", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\bin\\7za.exe", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\bin\\wrapper.exe", "C:\\ManageEngine\\OpManager\\jre\\bin\\java.exe", "C:\\ManageEngine\\EventLog Analyzer\\jre\\bin\\java.exe", "C:\\ManageEngine\\ADAudit Plus\\pgsql\\bin\\postgres.exe", "C:\\ManageEngine\\OpManager\\Probe\\OpManagerProbe\\pgsql\\bin\\postgres.exe", "\\Microsoft Intune Management Extension\\ClientHealthEval.exe", "\\IntuneManagementExtensionBridge\\IntuneManagementExtensionBridge.exe", "\\BridgeLauncher\\BridgeLauncher.exe", "\\Microsoft Intune Management Extension\\Microsoft.Management.Services.IntuneWindowsAgent.exe", "\\Microsoft Intune Management Extension\\Microsoft.Management.Clients.CopyAgentCatalog.exe", "\\Microsoft Intune Management Extension\\SensorLogonTask.exe", "\\Microsoft Intune Management Extension\\AgentExecutor.exe", "\\AppData\\Local\\MSP Anywhere for N-central\\Viewer\\Tmp\\SWI_MSP_RC_ViewerUpdate-", "\\DesktopCentral_Agent\\bin\\dcagentservice.exe", "\\DesktopCentral_Agent\\bin\\DCFAService64.exe", "\\DesktopCentral_Agent\\bin\\dcagentregister.exe", "\\DesktopCentral_Server\\pgsql\\bin\\postgres.exe", "\\DesktopCentral_Server\\bin\\wrapper.exe", "C:\\ManageEngine\\DesktopCentral_Server\\bin\\wrapper.exe", "\\DesktopCentral_Server\\bin\\UEMS.exe", "\\DesktopCentral_Server\\nginx\\dcnginx.exe", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\jre\\bin\\java.exe", "\\DesktopCentral_Agent\\bin\\EMSAddonInstaller.exe", "C:\\ManageEngine\\DesktopCentral_Server\\jre\\bin\\java.exe", "\\DesktopCentral_Server\\apache\\bin\\dcserverhttpd.exe", "\\DesktopCentral_Server\\bin\\7za.exe", "\\DesktopCentral_Server\\jre\\bin\\java.exe", "\\DesktopCentral_Server\\bin\\dcnotificationserver.exe", "\\DesktopCentral_Agent\\dcconfig.exe", "\\DesktopCentral_Agent\\patches\\", "C:\\ManageEngine\\AssetExplorer\\DesktopCentral_Server\\bin\\wrapper.exe", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\lib\\native\\64bit\\wrapper.dll", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\jre\\bin\\awt.dll", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\jre\\bin\\sunec.dll", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\jre\\bin\\freetype.dll", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\jre\\bin\\fontmanager.dll", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\lib\\native\\64bit\\SyMNative.dll", "\\ManageEngine\\ServiceDesk\\DesktopCentral_Server\\lib\\native\\64bit\\OSDSyMNative.dll", "C:\\Windows\\Action1\\action1_remote.exe", "C:\\Windows\\Action1\\action1_agent.exe"]; DeviceFileEvents | where FolderPath has_any (RMMToolPaths)
 ```
 
-## Exfiltration to known Scattered Spider Domains  
+### Exfiltration to Known Scattered Spider Domains
 
-```
+```KQL
 //Exfiltration to known Scattered Spider Domains  
 let exfilDomains = dynamic(["transfer.sh", "Mega.nz", "riseup.net"]);  
 DeviceNetworkEvents 
@@ -26,17 +44,16 @@ DeviceNetworkEvents
 | summarize count() by DeviceName, Timestamp   
 ```
 
-```
+```KQL
 ## RMM File Certificate Hunt Query  
 let RMMCertInfo = datatable(signer:string)['NinjaRMM, LLC',"Atera Networks Ltd","LogMeIn, Inc.","Action1 Corporation","add_more_in"]; 
 DeviceFileCertificateInfo
 | where Signer has_any (RMMCertInfo)   
 ```
 
+### Azure ARC Related Persistence
 
-## Azure ARC Related Persistence  
-
-```
+```KQL
 //unexpected installation of azure arc agent - service installation
 //https://learn.microsoft.com/en-us/azure/azure-arc/servers/agent-overview
 //scattered spider have been known to register their own azure tenant and install azure arc agents on devices to maintain persistence
@@ -50,8 +67,7 @@ DeviceEvents
 | where ServiceName has_any (ServiceNames)
 ```
 
-
-```
+```KQL
 //unexpected installation of azure arc agent - filepaths
 //https://learn.microsoft.com/en-us/azure/azure-arc/servers/agent-overview
 //scattered spider have been known to register their own azure tenant and install azure arc agents on devices to maintain persistence
@@ -62,14 +78,16 @@ DeviceFileEvents
 | where FolderPath  has_any (AzureArcServicePaths)
 ```
 
-## Scattered Spider Defense Evasion via Conditional Access Policies
+## Sentinel
 
-```
+### Scattered Spider Defense Evasion via Conditional Access Policies
+
+```KQL
 AuditLogs
 | where OperationName =~ "Update conditional access policy" and TargetResources has_all ('locations','excludeLocations')
 ```
 
-```
+```KQL
 AuditLogs
 | where OperationName =~ "Add named location" and TargetResources contains '"isTrusted":true' and AADOperationType == "Add" 
 ```

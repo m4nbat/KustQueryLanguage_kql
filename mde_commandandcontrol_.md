@@ -1,9 +1,31 @@
-# KQL : Hunting queries for C2 using MDE and network protection capability
+# KQL: Hunting Queries for C2 Using MDE and Network Protection Capability
 
-# Source: 
+## Query Information
+
+#### MITRE ATT&CK Technique(s)
+
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1071.001 | Application Layer Protocol: Web Protocols | [Web Protocols](https://attack.mitre.org/techniques/T1071/001/) |
+| T1566 | Phishing | [Phishing](https://attack.mitre.org/techniques/T1566/) |
+
+#### Description
+Hunting queries for command-and-control (C2) detection using MDE network protection capabilities. Covers SmartScreen URL warnings for Edge browser, Exploit Guard network protection blocks for third-party browsers, and detection of bypass attempts via user overrides.
+
+#### Risk
+Detecting C2 communications via network protection events helps identify compromised devices attempting to connect to malicious infrastructure. Monitoring bypass events is critical to identify users or malware overriding security controls.
+
+#### Author <Optional>
+- **Name:**
+- **Github:** https://github.com/LearningKijo/KQL
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
 - https://github.com/LearningKijo/KQL/blob/main/KQL-Effective-Use/03-kql-MDE-WebProtection.md
 
-**Edge browser** - Microsoft SmartScreen
+## Defender For Endpoint
 ```kql
 DeviceEvents
 | where Timestamp > ago(7d)
