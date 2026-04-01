@@ -1,12 +1,32 @@
-#
+# PowerShell Dirty Word Detection
 
-## SOURCE
+## Query Information
 
+#### MITRE ATT&CK Technique(s)
+
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1059.001 | Command and Scripting Interpreter: PowerShell | [PowerShell](https://attack.mitre.org/techniques/T1059/001/) |
+| T1027 | Obfuscated Files or Information | [Obfuscated Files or Information](https://attack.mitre.org/techniques/T1027/) |
+
+#### Description
+Detects suspicious PowerShell commands by scanning process command lines for a list of "dirty words" — API calls, .NET methods, and keywords commonly associated with offensive PowerShell tooling, reflective loading, credential dumping, and evasion techniques.
+
+#### Risk
+Attackers and offensive tools (e.g., PowerSploit, Mimikatz in-memory loading) heavily rely on specific .NET reflection APIs and Win32 P/Invoke calls. Matching against this dirty word list helps surface suspicious PowerShell activity that may otherwise evade signature-based detection.
+
+#### Author <Optional>
+- **Name:** nasbench
+- **Github:** https://gist.github.com/nasbench/50cd0b64bedacabccecc9149c15228da
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
 - https://gist.github.com/nasbench/50cd0b64bedacabccecc9149c15228da#file-pwsh_dirty_words-yml
 
-## MDE 
-
-```
+## Defender For Endpoint
+```KQL
 let dirtyWordList = datatable(word:string)["Add-Type"
 ,"AddSecurityPackage"
 ,"AdjustTokenPrivileges"
@@ -132,16 +152,3 @@ DeviceProcessEvents
 | where ( InitiatingProcessCommandLine has_any (dirtyWordList) or ProcessCommandLine has_any (dirtyWordList) ) 
 | where not ( FileName has_any (excludedProcess) or InitiatingProcessFileName has_any (excludedProcess) or InitiatingProcessParentFileName has_any (excludedProcess) ) or ( InitiatingProcessCommandLine has_any (excludedCommandLines) or ProcessCommandLine has_any (excludedCommandLines) )
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-

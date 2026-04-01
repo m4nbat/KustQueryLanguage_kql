@@ -1,12 +1,31 @@
-# Forensics on Standard Registry Run keys in Windows. Registry Run keys can be used to establish persistence on a device. 
+# Registry Run Key Persistence Forensics
 
-## Source:
-https://github.com/Bert-JanP/Hunting-Queries-Detection-Rules/edit/main/DFIR/DFE%20-%20Registry-Run-Keys-Forensics.md
+## Query Information
 
-----
-### Defender For Endpoint
+#### MITRE ATT&CK Technique(s)
 
-```
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1547.001 | Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder | [Registry Run Keys / Startup Folder](https://attack.mitre.org/techniques/T1547/001/) |
+
+#### Description
+Forensic queries for investigating standard Windows Registry Run key activity on potentially compromised devices. Queries cover the four most common Run key locations (HKLM and HKCU Run/RunOnce) and summarize all changes made within a configurable time window.
+
+#### Risk
+Registry Run keys are a well-known persistence mechanism used by malware and threat actors to survive reboots. These queries support DFIR investigations by providing a complete picture of Run key modifications on targeted devices.
+
+#### Author <Optional>
+- **Name:** Bert-JanP
+- **Github:** https://github.com/Bert-JanP/Hunting-Queries-Detection-Rules
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- https://github.com/Bert-JanP/Hunting-Queries-Detection-Rules/edit/main/DFIR/DFE%20-%20Registry-Run-Keys-Forensics.md
+
+## Defender For Endpoint
+```KQL
 let RegistryRunKeys = dynamic 
 ([@"HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run",
 @"HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce",
@@ -21,8 +40,9 @@ DeviceRegistryEvents
 | extend RegistryChangeInfo = bag_pack("RegistryKey", RegistryKey, "Action Performed", ActionType, "Old Value", PreviousRegistryKey, "New Value", RegistryValueData)
 | summarize TotalRunKeysChanged = count(), RegistryInfo = make_set(RegistryChangeInfo) by DeviceName
 ```
-### Sentinel
-```
+
+## Sentinel
+```KQL
 let RegistryRunKeys = dynamic 
 ([@"HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run",
 @"HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce",
@@ -38,6 +58,3 @@ DeviceRegistryEvents
 | extend RegistryChangeInfo = pack_dictionary("RegistryKey", RegistryKey, "Action Performed", ActionType, "Old Value", PreviousRegistryKey, "New Value", RegistryValueData)
 | summarize TotalRunKeysChanged = count(), RegistryInfo = make_set(RegistryChangeInfo) by DeviceName
 ```
-
-
-

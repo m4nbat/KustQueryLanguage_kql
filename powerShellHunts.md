@@ -1,6 +1,33 @@
+# PowerShell Hunting Queries
 
-## PowerShell creating external network connections followed by commands (may be noisy)
-```
+## Query Information
+
+#### MITRE ATT&CK Technique(s)
+
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1059.001 | Command and Scripting Interpreter: PowerShell | [PowerShell](https://attack.mitre.org/techniques/T1059/001/) |
+
+#### Description
+A collection of hunting queries for suspicious PowerShell activity. These queries cover PowerShell processes creating external network connections followed by commands, PowerShell creating executable files, and PowerShell DLLs being loaded by non-PowerShell processes.
+
+#### Risk
+Adversaries frequently abuse PowerShell for execution, lateral movement, and C2 communication. These queries help detect anomalous PowerShell network activity, executable creation, and reflective/in-memory loading of PowerShell capabilities in non-standard processes.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- N/A
+
+## Defender For Endpoint
+
+### PowerShell creating external network connections followed by commands (may be noisy)
+```KQL
 DeviceNetworkEvents 
 | where InitiatingProcessParentFileName != @"SenseIR.exe"
 | where ActionType == 'ConnectionSuccess' 
@@ -20,8 +47,8 @@ DeviceProcessEvents
 | project DeviceName, NetConTimestamp, RemoteIP, RemoteUrl,InitiatingProcessParentFileName,InitiatingProcessFileName, InitiatingProcessCommandLine, PsCommandTimestamp, PSCommand, ChildProcessStartTime, ChildProcessName, ChildProcessSHA1, ChildProcessCommandline
 ```
 
-## Powershell creating .exe
-```
+### PowerShell creating .exe
+```KQL
 DeviceFileEvents 
 | where InitiatingProcessParentFileName != @"SenseIR.exe"
 | where InitiatingProcessFileName has_any ("pwsh.exe","powershell.exe")
@@ -35,9 +62,8 @@ DeviceProcessEvents
 | project DeviceName, FileCreationTimestamp, FileName, SHA1, ProcessCreationTimestamp, FolderPath, ProcessCommandLine, ProcessCreationParentName, ProcessCreationParentCmdline, ProcessCreationParentFolderPath, ProcessCreationGrandParentName
 ```
 
-## PowerShell DLLs being called by non-PowerShell processes
-
-```
+### PowerShell DLLs being called by non-PowerShell processes
+```KQL
 DeviceImageLoadEvents
 | where TimeGenerated > ago(30d)
 | where FileName in~ ("System.Management.Automation.Dll","System.Management.Automation.ni.Dll","System.Reflection.Dl") and ActionType =~ "ImageLoaded"

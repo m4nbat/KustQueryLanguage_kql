@@ -1,24 +1,54 @@
-# ProxyNotShell exploitation of Exchange servers
-# Source: //https://redcanary.com/blog/intelligence-insights-january-2023/
+# ProxyNotShell Exploitation of Exchange Servers
 
-//Rundll32 executing DLL files located in the Windows Temp directory
-//The following detection analytic identifies instances of the Windows Rundll32 process loading code from DLL files located in the Windows Temp directory. It’s possible that some enterprise software in your environment will execute DLLs from windows\temp, so additional investigation may be needed to determine if the behavior is malicious.
+## Query Information
+
+#### MITRE ATT&CK Technique(s)
+
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1190 | Exploit Public-Facing Application | [Exploit Public-Facing Application](https://attack.mitre.org/techniques/T1190/) |
+| T1505.003 | Server Software Component: Web Shell | [Web Shell](https://attack.mitre.org/techniques/T1505/003/) |
+| T1059.005 | Command and Scripting Interpreter: Visual Basic | [Visual Basic](https://attack.mitre.org/techniques/T1059/005/) |
+
+#### Description
+Detection queries for ProxyNotShell (CVE-2022-41040 / CVE-2022-41082) exploitation of Microsoft Exchange servers. Covers rundll32 loading DLLs from Windows Temp, web shell file creation in Exchange paths, activity spawned from w3wp.exe with MSExchangePowerShellAppPool, and VBScript dropping and executing Meterpreter payloads from Temp directories.
+
+#### Risk
+ProxyNotShell exploitation allows unauthenticated remote code execution on on-premises Exchange servers, enabling attackers to deploy web shells, execute arbitrary commands, and establish persistent access to corporate email infrastructure.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- https://redcanary.com/blog/intelligence-insights-january-2023/
+
+## Defender For Endpoint
+
+### Rundll32 executing DLL files located in the Windows Temp directory
+```KQL
 let trustedDlls = datatable(dll:string)["trustedDll.dll"]; //place trusted DLLs that launch from temp folders here.
-//https://redcanary.com/blog/intelligence-insights-january-2023/
 DeviceProcessEvents
 | where ((InitiatingProcessFileName =~ "rundll32.exe" and ProcessCommandLine contains @"windows\temp") or (InitiatingProcessParentFileName =~ "rundll32.exe" and InitiatingProcessCommandLine contains @"windows\temp")) and not(InitiatingProcessCommandLine has_any (trustedDlls) or ProcessCommandLine has_any (trustedDlls))
+```
 
-//Look for web shell files named iisstart.aspx and logout.aspx being written to inetpub\wwwroot\aspnet_client and exchange server\v15\frontend\httpproxy\ecp\auth
-//https://redcanary.com/blog/intelligence-insights-january-2023/
+### Web shell files named iisstart.aspx and logout.aspx written to Exchange paths
+```KQL
 DeviceFileEvents
 | where ActionType =~ "FileCreated" and FileName has_any ("iisstart.exe","logout.aspx") and FolderPath has_any (@"inetpub\wwwroot\aspnet_client",@"server\v15\frontend\httpproxy\ecp\auth")
+```
 
-//Activity initiated from w3wp.exe with a command line containing MSExchangePowerShellAppPool. Based on Red Canary testing, the activity we saw, and other researchers’ observations, malicious activity spawning from a w3wp.exe process with this command line is an indicator of potential ProxyNotShell exploitation.
-//https://redcanary.com/blog/intelligence-insights-january-2023/
+### Activity initiated from w3wp.exe with MSExchangePowerShellAppPool command line
+```KQL
 DeviceProcessEvents
 | where InitiatingProcessFileName =~ "w3wp.exe" and InitiatingProcessCommandLine contains "MSExchangePowerShellAppPool"
+```
 
-//We observed execution of Visual Basic Scripts (.vbs) from the windows\temp folder writing a malicious Meterpreter executable and subsequently making network connections. The executable’s internal file name, ab.exe, is the default metadata used by Meterpreter for its payloads.
-//https://redcanary.com/blog/intelligence-insights-january-2023/
+### VBScript from Windows Temp folder writing and executing Meterpreter payload
+```KQL
 DeviceFileEvents
 | where InitiatingProcessFileName endswith ".vbs" and InitiatingProcessFolderPath contains @"windows\temp" and FileName matches regex "[a-zA-Z]{2}\\.exe"
+```
