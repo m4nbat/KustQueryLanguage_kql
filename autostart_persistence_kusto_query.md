@@ -1,17 +1,31 @@
-# Autostart Persistence
+# Autostart Persistence Registry Key Detection
 
-# Master Source: https://www.hexacorn.com/blog/2017/01/28/beyond-good-ol-run-key-all-parts/
+## Query Information
 
-## HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\PeerDist\Extension\PeerdistDllName=peerdist.dll
-The wininet.dll library is using this location internally in its P2P_PEER_DIST_API::LoadPeerDist function.
+#### MITRE ATT&CK Technique(s)
 
-## Source: https://www.hexacorn.com/blog/2022/01/23/beyond-good-ol-run-key-part-138/
-<br>  
-Kusto inspiration from [@Bert-JanP](https://github.com/Bert-JanP/Hunting-Queries-Detection-Rules/edit/main/DFIR/DFE%20-%20Registry-Run-Keys-Forensics.md)
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1547 | Boot or Logon Autostart Execution | [Autostart Execution](https://attack.mitre.org/techniques/T1547/) |
 
-### Defender For Endpoint
+#### Description
+Detects modifications to autostart persistence registry keys beyond the standard Run keys. Based on 'Beyond Good Ol Run Key' research tracking less common persistence locations.
 
-```
+#### Risk
+Adversaries use obscure autostart registry keys to establish persistence that survives reboots. These non-standard locations are often overlooked by security tools.
+
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
+
+#### References
+- https://www.hexacorn.com/blog/2017/01/28/beyond-good-ol-run-key-all-parts/
+
+## Defender For Endpoint
+```KQL
 let CompromisedDevices = dynamic (["laptop1", "server1"]);
 let SearchWindow = 7d; //Customizable h = hours, d = days
 DeviceRegistryEvents
@@ -21,9 +35,9 @@ DeviceRegistryEvents
 | extend RegistryChangeInfo = pack_dictionary("RegistryKey", RegistryKey, "Action Performed", ActionType, "Old Value", PreviousRegistryKey, "New Value", RegistryValueData)
 | summarize TotalKeysChanged = count(), RegistryInfo = make_set(RegistryChangeInfo) by DeviceName
 ```
-### Sentinel
 
-```
+## Sentinel
+```KQL
 let CompromisedDevices = dynamic (["laptop1", "server1"]);
 let SearchWindow = 7d; //Customizable h = hours, d = days
 DeviceRegistryEvents
@@ -33,10 +47,3 @@ DeviceRegistryEvents
 | extend RegistryChangeInfo = pack_dictionary("RegistryKey", RegistryKey, "Action Performed", ActionType, "Old Value", PreviousRegistryKey, "New Value", RegistryValueData)
 | summarize TotalKeysChanged = count(), RegistryInfo = make_set(RegistryChangeInfo) by DeviceName
 ```
-
-
-
-Persistence registry keys:
-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\explorer\AutoplayHandlers\Handlers
-HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\StillImage\Registered Applications
-HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\StillImage\Events\STIProxyEvent

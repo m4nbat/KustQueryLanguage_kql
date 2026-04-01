@@ -1,23 +1,62 @@
-# OneNote spawning suspicious child processes
-The following pseudo-detection analytic identifies OneNote as a parent process for suspicious child processes. This is not a new type of analytic; historically they have been useful for detecting suspicious Excel child processes. The same type of logic can be leveraged to detect suspicious OneNote activity. This pseudo-analytic would need to be updated as adversaries change which processes they start with OneNote, so an alternative option would be to detect any child processes spawned from Office applications.
+# OneNote Suspicious Child Process and Activity Detection
 
-## OneNote spawning suspicious child processes
-The following detection analytic identifies OneNote as a parent process for suspicious child processes. This is not a new type of analytic; historically they have been useful for detecting suspicious Excel child processes. The same type of logic can be leveraged to detect suspicious OneNote activity. This pseudo-analytic would need to be updated as adversaries change which processes they start with OneNote, so an alternative option would be to detect any child processes spawned from Office applications.
+## Query Information
 
+#### MITRE ATT&CK Technique(s)
 
-`DeviceProcessEvents
-| where InitiatingProcessFileName =~ "onenote.exe" and FileName in~ ("cmd.exe","powershell.exe",wscript.exe,"jscript.exe")`
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1566.001 | Phishing: Spearphishing Attachment | [Spearphishing Attachment](https://attack.mitre.org/techniques/T1566/001/) |
+| T1059 | Command and Scripting Interpreter | [Command and Scripting Interpreter](https://attack.mitre.org/techniques/T1059/) |
 
+#### Description
+Detects suspicious child processes spawned by OneNote (onenote.exe), anomalous URL connections from OneNote, and potential OneNote-based phishing using shared links.
 
-## OneNote Url connections (can be noisy) good for frequency analysis or enriching with IoA / IoC data
+#### Risk
+Adversaries have been distributing malware through OneNote files (.one) that launch malicious scripts when opened. OneNote spawning cmd.exe, PowerShell, or script interpreters is a strong indicator of compromise.
 
-`DeviceEvents
-| where ActionType =~ "BrowserLaunchedToOpenUrl" and InitiatingProcessFileName in~ ("onenote.exe") and RemoteUrl !startswith @"C:\Users\"`
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
 
+#### References
+- https://redcanary.com/blog/intelligence-insights-march-2023/
 
-## Possible OneNote phishing using a shared link
+## Defender For Endpoint
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "onenote.exe" and FileName in~ ("cmd.exe","powershell.exe",wscript.exe,"jscript.exe")
+```
 
-`let exclusionDomain = datatable(domain:string)["exampledomain.com"];
+```KQL
+DeviceEvents
+| where ActionType =~ "BrowserLaunchedToOpenUrl" and InitiatingProcessFileName in~ ("onenote.exe") and RemoteUrl !startswith @"C:\Users\"
+```
+
+```KQL
+let exclusionDomain = datatable(domain:string)["exampledomain.com"];
 EmailEvents
 | join EmailUrlInfo on NetworkMessageId
-| where Url has_all ("my.sharepoint.com","personal") and Subject has_all ("shared") and SenderFromDomain !in~ (exclusionDomain);`
+| where Url has_all ("my.sharepoint.com","personal") and Subject has_all ("shared") and SenderFromDomain !in~ (exclusionDomain);
+```
+
+## Sentinel
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "onenote.exe" and FileName in~ ("cmd.exe","powershell.exe",wscript.exe,"jscript.exe")
+```
+
+```KQL
+DeviceEvents
+| where ActionType =~ "BrowserLaunchedToOpenUrl" and InitiatingProcessFileName in~ ("onenote.exe") and RemoteUrl !startswith @"C:\Users\"
+```
+
+```KQL
+let exclusionDomain = datatable(domain:string)["exampledomain.com"];
+EmailEvents
+| join EmailUrlInfo on NetworkMessageId
+| where Url has_all ("my.sharepoint.com","personal") and Subject has_all ("shared") and SenderFromDomain !in~ (exclusionDomain);
+```
