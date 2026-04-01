@@ -1,10 +1,33 @@
-# AWS Hunt Queries
+# AWS EC2 Security Group Backdoor Detection
 
-## EC2 Security Group Backdoor
+## Query Information
 
-**SIGMA**
+#### MITRE ATT&CK Technique(s)
 
-`title: 'Detects Backdooring EC2 Security Groups'
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1562.007 | Impair Defenses: Disable or Modify Cloud Firewall | [Impair Defenses: Disable or Modify Cloud Firewall](https://attack.mitre.org/techniques/T1562/007/) |
+
+#### Description
+Detects attempts to backdoor AWS EC2 Security Groups by inserting unauthorized inbound access rules. Adversaries may modify security group ingress rules to allow access from attacker-controlled IP addresses, creating a persistent backdoor into EC2 instances.
+
+#### Risk
+Unauthorized modification of EC2 security group ingress rules could allow attacker-controlled IP addresses to access EC2 instances, bypassing network-level security controls and enabling persistent remote access.
+
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- https://attack.mitre.org/techniques/T1562/007/
+
+## SIGMA Rule
+
+```
+title: 'Detects Backdooring EC2 Security Groups'
 description: 'Detects the insertion of backdoor access into EC2'
 author: 'Gavin Knapp'
 status: experimental
@@ -25,9 +48,11 @@ fields:
     - 'userIdentity.arn'
 falsepositives:
     - 'Valid changes to security groups'
-level: 'high'`
+level: 'high'
+```
 
-# Sentinel
-
-`AWSCloudTrail 
-| where ((eventName =~ @'AuthorizeSecurityGroupIngress' and eventSource =~ @'ec2.amazonaws.com') and not (sourceIPAddress in~ (@'107.14.3.11', @'107.14.3.10', @'107.14.3.12')))`
+## Sentinel
+```KQL
+AWSCloudTrail 
+| where ((eventName =~ @'AuthorizeSecurityGroupIngress' and eventSource =~ @'ec2.amazonaws.com') and not (sourceIPAddress in~ (@'107.14.3.11', @'107.14.3.10', @'107.14.3.12')))
+```

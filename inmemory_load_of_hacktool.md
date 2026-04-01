@@ -1,10 +1,31 @@
-# Catch in memory loading of hack tools for example loading via a c2 framework such as CobaltStrike
+# Catch In-Memory Loading of Hack Tools
 
-## Source: Recent Purple Team
+## Query Information
 
-## MDE
+#### MITRE ATT&CK Technique(s)
 
-```
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1620 | Reflective Code Loading | [Reflective Code Loading](https://attack.mitre.org/techniques/T1620/) |
+
+#### Description
+Detects in-memory loading of known offensive security tools and post-exploitation frameworks (e.g., Rubeus, SharpHound, Seatbelt, Mimikatz variants) via CLR unbacked module loads in PowerShell. These tools are commonly delivered via C2 frameworks like Cobalt Strike after initial access.
+
+#### Risk
+In-memory loading of hack tools via PowerShell's CLR bypasses traditional file-based AV/EDR detection. Detection of CLR unbacked module loads matching known offensive tool names indicates active post-exploitation activity, potentially including credential theft, lateral movement, or privilege escalation.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- Recent Purple Team
+
+## Defender For Endpoint
+```KQL
 let iocList = dynamic ([
 "BOFNET",
 "SharpUp",
@@ -101,8 +122,7 @@ DeviceEvents
 ```
 
 ## Sentinel
-
-```
+```KQL
 let iocList = dynamic ([
 "BOFNET",
 "SharpUp",

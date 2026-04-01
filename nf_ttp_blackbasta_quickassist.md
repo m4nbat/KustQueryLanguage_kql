@@ -1,3 +1,34 @@
+# Black Basta Quick Assist
+
+## Query Information
+
+#### MITRE ATT&CK Technique(s)
+
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1566 | Phishing | [Phishing](https://attack.mitre.org/techniques/T1566/) |
+| T1219 | Remote Access Software | [Remote Access Software](https://attack.mitre.org/techniques/T1219/) |
+| T1105 | Ingress Tool Transfer | [Ingress Tool Transfer](https://attack.mitre.org/techniques/T1105/) |
+
+#### Description
+These queries detect Black Basta ransomware group TTPs, including email bombing campaigns used as a precursor to Quick Assist social engineering attacks, Quick Assist remote access usage, and follow-on curl-based payload download activity.
+
+#### Risk
+Black Basta ransomware operators use email bombing to overwhelm users, then impersonate IT support via Quick Assist to gain remote access. This can lead to ransomware deployment, data exfiltration, and full domain compromise.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- [Microsoft Threat Intelligence: Threat actors misusing Quick Assist in social engineering attacks leading to ransomware](https://www.microsoft.com/en-us/security/blog/2024/05/15/threat-actors-misusing-quick-assist-in-social-engineering-attacks-leading-to-ransomware/)
+
+## Defender For Endpoint
+
+```KQL
 // Look for anomalous emails being received that contain keywords in the subject linked to email bombing campaigns
 EmailEvents
 | where EmailDirection == "Inbound" and Subject has_all ("subscription","confirm")
@@ -10,19 +41,26 @@ EmailEvents
 | where Anomalies != 0
 | where AnomalyScore >= 10 // can be tweaked to suit each hunt
 | where Emailcount > 5  // only return instances where there are more than 5 emails in the period with the subject keyword matches
- 
+```
+
+```KQL
 // Search for the email results based on the results f the above query
 EmailEvents
 | where RecipientObjectId in ("ENTER YOUR OBJECT ID E.G. 71d04be0-d33f-4cc1-a097-7086d7c7069d")
 | where Subject has_all ("subscription","confirm") // Mirror the keywords you used for the original anomaly hunt
- 
+```
+
+```KQL
 //Search for quick assist usage in the environment
 DeviceNetworkEvents
 | where InitiatingProcessCommandLine contains "QuickAssist.exe" and RemoteUrl contains "remoteassistance.support.services.microsoft.com"
- 
+```
+
+```KQL
 // Follow-on activity leading to Black Basta ransomware - curl activity
 let commands = datatable(command:string)["o","insecure","http"];
 let net_iocs = datatable(ioc:string)["upd7","upd7a","upd9","upd5","github"];
 DeviceNetworkEvents
 | where TimeGenerated > ago(25m)
 | where (InitiatingProcessVersionInfoOriginalFileName =~ "curl.exe" or InitiatingProcessFileName =~ "curl.exe") and InitiatingProcessCommandLine has_any (file_ext) and InitiatingProcessCommandLine matches regex @"(upd7.|upd7a.|upd9.|upd5.)"
+```

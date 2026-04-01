@@ -1,20 +1,32 @@
-# Title
-Winlogon Registry Key Persistence
+# Winlogon Registry Key Persistence
 
-# Tactics: 
-- Persistence
-- T1547:	Boot or Logon Autostart Execution
-- T1547.001:	Registry Run Keys / Startup Folder
+## Query Information
 
-# Source
-- https://www.hackingarticles.in/windows-persistence-using-winlogon/
+#### MITRE ATT&CK Technique(s)
 
-# Description
-Find Winlogon with outbound connections #MDE
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1547 | Boot or Logon Autostart Execution | [Boot or Logon Autostart Execution](https://attack.mitre.org/techniques/T1547/) |
+| T1547.001 | Boot or Logon Autostart Execution: Registry Run Keys / Startup Folder | [Registry Run Keys / Startup Folder](https://attack.mitre.org/techniques/T1547/001/) |
 
-Kusto:
+#### Description
+Find modifications to Winlogon registry keys that are commonly abused for persistence. Attackers modify the `shell` or `userinit` values under `SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon` to execute malicious binaries at every user logon.
 
-```
+#### Risk
+Winlogon registry key modifications provide a stealthy persistence mechanism that executes attacker-controlled binaries during every logon. This technique survives reboots and is difficult to detect without monitoring registry changes to these specific keys.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- [Windows Persistence Using Winlogon](https://www.hackingarticles.in/windows-persistence-using-winlogon/)
+
+## Defender For Endpoint
+```KQL
 DeviceRegistryEvents  
 | where ActionType in~ ("RegistryValueSet","RegistryValueCreated")  
 | where ( RegistryKey has @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" or RegistryKey has @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" ) and RegistryValueName in~ ("shell","userinit")

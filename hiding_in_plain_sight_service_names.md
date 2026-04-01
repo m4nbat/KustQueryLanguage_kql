@@ -1,8 +1,31 @@
 # Commonly used malicious service names used to evade detection
 
-## MDE
+## Query Information
 
-```
+#### MITRE ATT&CK Technique(s)
+
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1036.004 | Masquerading: Masquerade Task or Service | [Masquerading: Masquerade Task or Service](https://attack.mitre.org/techniques/T1036/004/) |
+
+#### Description
+Detects newly created processes whose names closely resemble legitimate Windows service executables (e.g., svchost.exe, winlogon.exe) using a curated list of known malicious lookalike names. Attackers commonly use these typosquatted names to evade detection by blending in with legitimate system processes.
+
+#### Risk
+Malware and threat actors frequently masquerade as legitimate Windows services using slight name variations to avoid detection. A process creation event matching one of these known malicious service name patterns is a high-confidence indicator of malicious activity requiring immediate investigation.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+
+## Sentinel
+
+```KQL
 // create a dynamic list of commonly used malicious service names used to evade detection..
 let service_name_evade = dynamic(['_sachost.exe',
 '_svch0st.exe',

@@ -1,23 +1,35 @@
-# Title
-Unusual Discord Network Connection
+# Unusual Discord Network Connection
 
-# Description
-An analytic to detect unusual connections to Discord domains that are known to have been used by malware for command and control or data exfiltration
+## Query Information
 
-# Source
-https://www.trellix.com/about/newsroom/stories/research/discord-i-want-to-play-a-game/
+#### MITRE ATT&CK Technique(s)
 
-# Author
-- Yashraj Solanki
-- Gavin Knapp
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1102 | Web Service | [Web Service](https://attack.mitre.org/techniques/T1102/) |
+| T1041 | Exfiltration Over C2 Channel | [Exfiltration Over C2 Channel](https://attack.mitre.org/techniques/T1041/) |
 
-# Mitre Techniques
+#### Description
+An analytic to detect unusual connections to Discord domains that are known to have been used by malware for command and control or data exfiltration. The queries cover suspicious connections to Discord domains, potential exfiltration via Discord webhooks, and suspicious file downloads from Discord's CDN.
 
-# Query
+#### Risk
+Malware increasingly abuses Discord's infrastructure for command and control, data exfiltration, and payload delivery. Because Discord is a legitimate service widely allowed by corporate firewalls, these connections blend in with normal traffic and are difficult to block without targeted detection.
 
-## Suspicious Connections to Discord
+#### Author <Optional>
+- **Name:** Yashraj Solanki, Gavin Knapp
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
 
-```
+#### References
+- [Discord: I Want to Play a Game](https://www.trellix.com/about/newsroom/stories/research/discord-i-want-to-play-a-game/)
+
+## Defender For Endpoint
+
+### Suspicious Connections to Discord
+
+```KQL
 
 let iocs = datatable (domain:string)['dis.gd','discord.co','discord.com','discord.design','discord.dev','discord.gg','discord.gift','discord.gifts','discord.media','discord.new','discord.store','discord.tools','discord-activities.com','discordactivities.com','discordapp.com','discordapp.net','discordmerch.com','discordpartygames.com','discordsays.com','discordstatus.com','discordapp.io','discordcdn.com'];
 let excludedProcessFileNames = datatable (filepattern:string)["Discord Helper","Discord"]; // you will likely need to exclude legitimate browsers or apps
@@ -31,9 +43,9 @@ let excludedProcessFileNames = datatable (filepattern:string)["Discord Helper","
 
 ```
 
-## Potential Exfiltration to Discord WebHook
+### Potential Exfiltration to Discord WebHook
 
-```
+```KQL
 
 let iocs = datatable (domain:string)["discord.com/api/webhooks"];
 let excludedProcessFileNames = datatable (filepattern:string)["Discord Helper","Discord"]; // you will likely need to exclude legitimate browsers or apps
@@ -47,9 +59,9 @@ let excludedProcessFileNames = datatable (filepattern:string)["Discord Helper","
 
 ```
 
-## Suspicious download from Discord
+### Suspicious download from Discord
 
-```
+```KQL
 
 let iocs = datatable (domain:string)["cdn.discordapp.com/attachments"];
 let excludedProcessFileNames = datatable (filepattern:string)["Discord Helper","Discord"]; // you will likely need to exclude legitimate browsers or apps

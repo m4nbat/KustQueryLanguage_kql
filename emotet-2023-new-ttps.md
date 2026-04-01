@@ -1,16 +1,42 @@
 # Emotet TTPs Q1 2023
-## Source: Microsoft Threat Analytics
+
+## Query Information
+
+#### MITRE ATT&CK Technique(s)
+
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1566.001 | Phishing: Spearphishing Attachment | [Phishing: Spearphishing Attachment](https://attack.mitre.org/techniques/T1566/001/) |
+| T1027.001 | Obfuscated Files or Information: Binary Padding | [Obfuscated Files or Information: Binary Padding](https://attack.mitre.org/techniques/T1027/001/) |
+
+#### Description
+Detects Emotet's zip bomb technique used in Q1 2023, where a large executable (>256MB) is delivered inside a small archive file to evade security detection. The query correlates the delivery of a small archive with the creation of a large unpacked file, and checks for follow-on behaviors such as screenshots taken, DPAPI access, and sensitive file reads.
+
+#### Risk
+Emotet uses zip bomb archives to deliver large executables that evade sandbox and AV scanning due to resource constraints. A device that downloads a small archive which extracts to a file with a high compression ratio, combined with behaviors like screenshots or DPAPI access, indicates active Emotet infection with potential credential theft activity in progress.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- https://learn.microsoft.com/en-us/microsoft-365/security/defender/microsoft-365-security-center-mde
+
+## Defender For Endpoint
 
 ![image](https://user-images.githubusercontent.com/16122365/227981654-827905ae-9088-42bf-925a-990c6b163a5b.png)
 
-
-**NOTE:** The following sample queries let you search for a week's worth of events. To explore up to 30 days’ worth of raw data to inspect events in your network and locate potential Emotet zip bomb-related indicators for more than a week, go to the Advanced Hunting page > Query tab, select the calendar dropdown menu to update your query to hunt for the Last 30 days.
+**NOTE:** The following sample queries let you search for a week's worth of events. To explore up to 30 days' worth of raw data to inspect events in your network and locate potential Emotet zip bomb-related indicators for more than a week, go to the Advanced Hunting page > Query tab, select the calendar dropdown menu to update your query to hunt for the Last 30 days.
 
 To locate possible exploitation activity, run the following queries in Microsoft 365 security center.
 
 Large file delivered from small archive file. Look for the delivery of a large (> 256MB) executable by an archive file. This is often used as a security detection evasion.
 
-`let largeFileMin = 268435456; // 256mb
+```KQL
+let largeFileMin = 268435456; // 256mb
 let smallFileMin = 102400; // 100kb
 let smallFileMax = 67108864; // 64mb
 let ratioMin = 75; // compression ratio, larger number indicates padding/ empty values more likely
@@ -113,4 +139,5 @@ smallParentFull
     has_UnprotectDPAPI=iff(isnotnull(UnprotectTime),true,bool(null)),
     has_FileOpen=iff(isnotnull(FileOpenTime),true,bool(null))
 | project-reorder DownloadTime, FileUnpackTime, ScreenShotTime, FileOpenTime, 
-    UnprotectTime, has_*, DeviceId, ratioPacked, DownloadFileSize, UnpackSize`
+    UnprotectTime, has_*, DeviceId, ratioPacked, DownloadFileSize, UnpackSize
+```

@@ -1,5 +1,7 @@
 # Polyfill Supply Chain Attack Detection
 
+## Query Information
+
 #### MITRE ATT&CK Technique(s)
 
 | Technique ID | Title    | Link    |
