@@ -16,7 +16,7 @@ These queries detect Black Basta ransomware group TTPs, including email bombing 
 #### Risk
 Black Basta ransomware operators use email bombing to overwhelm users, then impersonate IT support via Quick Assist to gain remote access. This can lead to ransomware deployment, data exfiltration, and full domain compromise.
 
-#### Author
+#### Author <Optional>
 - **Name:**
 - **Github:**
 - **Twitter:**

@@ -16,7 +16,7 @@ These queries detect TTPs associated with Kapeka and QUEUESEED malware used by t
 #### Risk
 Sandworm (UAC-0133) is a Russian state-sponsored APT targeting critical infrastructure. Kapeka and QUEUESEED malware provide persistent backdoor access that can lead to sabotage, data destruction, and disruption of critical services.
 
-#### Author
+#### Author <Optional>
 - **Name:**
 - **Github:**
 - **Twitter:**

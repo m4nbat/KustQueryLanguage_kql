@@ -15,7 +15,7 @@ These queries detect ShadowLink malware activity associated with Sandworm, inclu
 #### Risk
 ShadowLink is a Sandworm (Russian GRU-linked APT) malware that uses Tor for covert C2 communication. Detection is critical as it indicates potential nation-state compromise with risk of espionage, sabotage, or destructive attacks on targeted infrastructure.
 
-#### Author
+#### Author <Optional>
 - **Name:**
 - **Github:**
 - **Twitter:**
