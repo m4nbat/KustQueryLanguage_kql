@@ -1,10 +1,128 @@
-# Catch in memory loading of hack tools for example loading via a c2 framework such as CobaltStrike
+# In-Memory Loading of Hack Tools (Sharp* / Offensive .NET) Detection
 
-## Source: Recent Purple Team
+## Query Information
 
-## MDE
+#### MITRE ATT&CK Technique(s)
 
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1620 | Reflective Code Loading | [Reflective Code Loading](https://attack.mitre.org/techniques/T1620/) |
+
+#### Description
+Detects in-memory loading of offensive .NET tools (SharpHound, Rubeus, Certify, etc.) via CLR unbackedmodule loads. These tools are commonly delivered via Cobalt Strike or other C2 frameworks.
+
+#### Risk
+Offensive .NET tools loaded in-memory via C2 frameworks like Cobalt Strike are used for post-exploitation. In-memory execution evades file-based detection solutions.
+
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
+
+#### References
+- https://github.com/GhostPack/Rubeus
+- https://github.com/BloodHoundAD/SharpHound
+
+## Defender For Endpoint
+```KQL
+let iocList = dynamic ([
+"BOFNET",
+"SharpUp",
+"ReflectedDelegate",
+'ADCollector',
+'ADCSPwn',
+'ADSearch',
+'ADFSDump',
+'AtYourService',
+'BetterSafetyKatz',
+'Certify',
+'EDD',
+'ForgeCert',
+'DeployPrinterNightmare',
+'Grouper2',
+'Group3r',
+'KrbRelay',
+'KrbRelayUp',
+'InveighZero',
+'LockLess',
+'PassTheCert',
+'PurpleSharp',
+'Rubeus',
+'SafetyKatz',
+'SauronEye',
+'scout',
+'SearchOutlook',
+'Seatbelt',
+'Sharp-SMBExec',
+'SharpAllowedToAct',
+'SharpAppLocker',
+'SharpBlock',
+'SharpBypassUAC',
+'SharpChisel',
+'SharpChrome',
+'SharpChromium',
+'SharpCloud',
+'SharpCOM',
+'SharpCrashEventLog',
+'SharpDir',
+'SharpDoor',
+'SharpDPAPI',
+'SharpDump',
+'SharpEDRChecker',
+'SharpExec',
+'SharPersist',
+'SharpFiles',
+'SharpGPOAbuse',
+'SharpHandler',
+'SharpHose',
+'SharpHound',
+'SharpKatz',
+'SharpLaps',
+'SharpMapExec',
+'SharpMiniDump',
+'SharpMove',
+'SharpPrinter',
+'SharpNoPSExec',
+'SharpRDP',
+'SharpReg',
+'SharpSCCM',
+'SharpSecDump',
+'SharpShares',
+'SharpSphere',
+'SharpSpray',
+'SharpStay',
+'SharpSvc',
+'SharpSniper',
+'SharpSQLPwn',
+'SharpTask',
+'SharpUp',
+'SharpView',
+'SharpWMI',
+'SharpWebServer',
+'SharpWifiGrabber',
+'SharpZeroLogon',
+'Shhmon',
+'Snaffler',
+'SqlClient',
+'StandIn',
+'StickyNotesExtract',
+'SweetPotato',
+'ThunderFox',
+'TruffleSnout',
+'TokenStomp',
+'Watson',
+'winPEAS',
+'WMIReg',
+'Whisker'
+]);
+DeviceEvents
+| extend module = parse_json(AdditionalFields).ModuleILPathOrName
+| where ActionType =~ "ClrUnbackedModuleLoaded" and module in~ (iocList) and InitiatingProcessFileName =~ "powershell.exe"
 ```
+
+```KQL
 let iocList = dynamic ([
 "BOFNET",
 "SharpUp",
@@ -101,8 +219,103 @@ DeviceEvents
 ```
 
 ## Sentinel
-
+```KQL
+let iocList = dynamic ([
+"BOFNET",
+"SharpUp",
+"ReflectedDelegate",
+'ADCollector',
+'ADCSPwn',
+'ADSearch',
+'ADFSDump',
+'AtYourService',
+'BetterSafetyKatz',
+'Certify',
+'EDD',
+'ForgeCert',
+'DeployPrinterNightmare',
+'Grouper2',
+'Group3r',
+'KrbRelay',
+'KrbRelayUp',
+'InveighZero',
+'LockLess',
+'PassTheCert',
+'PurpleSharp',
+'Rubeus',
+'SafetyKatz',
+'SauronEye',
+'scout',
+'SearchOutlook',
+'Seatbelt',
+'Sharp-SMBExec',
+'SharpAllowedToAct',
+'SharpAppLocker',
+'SharpBlock',
+'SharpBypassUAC',
+'SharpChisel',
+'SharpChrome',
+'SharpChromium',
+'SharpCloud',
+'SharpCOM',
+'SharpCrashEventLog',
+'SharpDir',
+'SharpDoor',
+'SharpDPAPI',
+'SharpDump',
+'SharpEDRChecker',
+'SharpExec',
+'SharPersist',
+'SharpFiles',
+'SharpGPOAbuse',
+'SharpHandler',
+'SharpHose',
+'SharpHound',
+'SharpKatz',
+'SharpLaps',
+'SharpMapExec',
+'SharpMiniDump',
+'SharpMove',
+'SharpPrinter',
+'SharpNoPSExec',
+'SharpRDP',
+'SharpReg',
+'SharpSCCM',
+'SharpSecDump',
+'SharpShares',
+'SharpSphere',
+'SharpSpray',
+'SharpStay',
+'SharpSvc',
+'SharpSniper',
+'SharpSQLPwn',
+'SharpTask',
+'SharpUp',
+'SharpView',
+'SharpWMI',
+'SharpWebServer',
+'SharpWifiGrabber',
+'SharpZeroLogon',
+'Shhmon',
+'Snaffler',
+'SqlClient',
+'StandIn',
+'StickyNotesExtract',
+'SweetPotato',
+'ThunderFox',
+'TruffleSnout',
+'TokenStomp',
+'Watson',
+'winPEAS',
+'WMIReg',
+'Whisker'
+]);
+DeviceEvents
+| extend module = parse_json(AdditionalFields).ModuleILPathOrName
+| where ActionType =~ "ClrUnbackedModuleLoaded" and module in~ (iocList) and InitiatingProcessFileName =~ "powershell.exe"
 ```
+
+```KQL
 let iocList = dynamic ([
 "BOFNET",
 "SharpUp",

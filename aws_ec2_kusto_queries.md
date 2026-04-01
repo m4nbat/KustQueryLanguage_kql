@@ -1,33 +1,37 @@
-# AWS Hunt Queries
+# AWS EC2 Security Group Backdoor Detection
 
-## EC2 Security Group Backdoor
+## Query Information
 
-**SIGMA**
+#### MITRE ATT&CK Technique(s)
 
-`title: 'Detects Backdooring EC2 Security Groups'
-description: 'Detects the insertion of backdoor access into EC2'
-author: 'Gavin Knapp'
-status: experimental
-logsource:
-    service: cloudtrail
-detection:
-  event_source:
-  - eventName: AuthorizeSecurityGroupIngress
-  - eventSource: ec2.amazonaws.com
-  Filter_Trusted_Ips:
-   sourceIPAddress:
-     - 1.1.1.2
-     - 8.8.8.8
-  condition: "all of event_source and not Filter_Trusted_Ips"
-fields:
-    - 'sourceIPAddress'
-    - 'requestParameters.cidrIp'
-    - 'userIdentity.arn'
-falsepositives:
-    - 'Valid changes to security groups'
-level: 'high'`
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1098 | Account Manipulation | [Account Manipulation](https://attack.mitre.org/techniques/T1098/) |
 
-# Sentinel
+#### Description
+Detects the insertion of backdoor access into AWS EC2 security groups by identifying AuthorizeSecurityGroupIngress API calls from untrusted IP addresses.
 
-`AWSCloudTrail 
-| where ((eventName =~ @'AuthorizeSecurityGroupIngress' and eventSource =~ @'ec2.amazonaws.com') and not (sourceIPAddress in~ (@'107.14.3.11', @'107.14.3.10', @'107.14.3.12')))`
+#### Risk
+Adversaries compromise AWS environments and modify EC2 security groups to open unauthorized inbound access, enabling persistent remote access or exfiltration channels.
+
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
+
+#### References
+- https://aws.amazon.com/cloudtrail/
+
+## Defender For Endpoint
+```KQL
+AWSCloudTrail 
+| where ((eventName =~ @'AuthorizeSecurityGroupIngress' and eventSource =~ @'ec2.amazonaws.com') and not (sourceIPAddress in~ (@'107.14.3.11', @'107.14.3.10', @'107.14.3.12')))
+```
+
+## Sentinel
+```KQL
+AWSCloudTrail 
+| where ((eventName =~ @'AuthorizeSecurityGroupIngress' and eventSource =~ @'ec2.amazonaws.com') and not (sourceIPAddress in~ (@'107.14.3.11', @'107.14.3.10', @'107.14.3.12')))
+```

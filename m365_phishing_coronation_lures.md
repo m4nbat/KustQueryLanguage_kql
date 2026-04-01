@@ -1,39 +1,47 @@
-# Tactic: Initial Access
+# M365 Coronation-Lure Phishing Campaign Detection
 
-# Techniques
+## Query Information
 
-|ID|Technique|Detail|
-|--|--|--|
-| T1566 | Phishing | https://attack.mitre.org/techniques/T1566/ |
-| T1566.001 | 	Spearphishing Attachment | https://attack.mitre.org/techniques/T1566/001/ |
-| T1566.002 | Spearphishing Link | https://attack.mitre.org/techniques/T1566/002/ |
-| T1566.003 | Spearphishing via Service | https://attack.mitre.org/techniques/T1566/003/ |
+#### MITRE ATT&CK Technique(s)
 
-# KQL hunt queries:
-Find all intrusion attempts for analysis:
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1566.001 | Phishing: Spearphishing Attachment | [Spearphishing Attachment](https://attack.mitre.org/techniques/T1566/001/) |
+| T1566.002 | Phishing: Spearphishing Link | [Spearphishing Link](https://attack.mitre.org/techniques/T1566/002/) |
 
-```
+#### Description
+Detection queries for phishing campaigns using coronation-themed lures. Identifies inbound phishing and malware emails with coronation-related subjects, including bypassed deliveries.
+
+#### Risk
+Threat actors commonly exploit major world events (like royal coronations) as phishing lures. These campaigns can bypass email security when legitimate brands or events are impersonated.
+
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
+
+#### References
+- https://attack.mitre.org/techniques/T1566/
+
+## Defender For Endpoint
+```KQL
 EmailEvents 
 | where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation"
 ```
 
-Find successful attempts:
-
-```
+```KQL
 EmailEvents
 | where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation" and DeliveryAction !~ "Blocked"
 ```
 
-There is actually a bit more nuance to the EmailEvents table when post delivery actions may have been taken to quarrantine or block eg ZAP:
-
-```
+```KQL
 EmailEvents
 | where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation" and ((DeliveryAction !~ "Blocked" or LatestDeliveryAction !~ "Blocked") or ( DeliveryLocation !~ "Quarantine" or LatestDeliveryLocation !~ "Quarantine" ))
 ```
 
-Viualising the data for the above:
-
-```
+```KQL
 //visualise emails tagged as malware inbound
 EmailEvents
 | where TimeGenerated > ago7d)
@@ -42,7 +50,39 @@ EmailEvents
 | render columnchart kind=stacked
 ```
 
+```KQL
+EmailEvents
+| where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation" and ((DeliveryAction !~ "Blocked" or LatestDeliveryAction !~ "Blocked") or ( DeliveryLocation !~ "Quarantine" or LatestDeliveryLocation !~ "Quarantine" ))
+| summarize emails=count() by bin(TimeGenerated, 1d), SenderFromAddress
+| render columnchart kind=stacked
 ```
+
+## Sentinel
+```KQL
+EmailEvents 
+| where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation"
+```
+
+```KQL
+EmailEvents
+| where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation" and DeliveryAction !~ "Blocked"
+```
+
+```KQL
+EmailEvents
+| where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation" and ((DeliveryAction !~ "Blocked" or LatestDeliveryAction !~ "Blocked") or ( DeliveryLocation !~ "Quarantine" or LatestDeliveryLocation !~ "Quarantine" ))
+```
+
+```KQL
+//visualise emails tagged as malware inbound
+EmailEvents
+| where TimeGenerated > ago7d)
+| where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation"
+| summarize emails=count() by bin(TimeGenerated, 1d), SenderFromAddress
+| render columnchart kind=stacked
+```
+
+```KQL
 EmailEvents
 | where EmailDirection =~ "Inbound" and ThreatTypes has_any ("Phish","Malware") and Subject contains "coronation" and ((DeliveryAction !~ "Blocked" or LatestDeliveryAction !~ "Blocked") or ( DeliveryLocation !~ "Quarantine" or LatestDeliveryLocation !~ "Quarantine" ))
 | summarize emails=count() by bin(TimeGenerated, 1d), SenderFromAddress
