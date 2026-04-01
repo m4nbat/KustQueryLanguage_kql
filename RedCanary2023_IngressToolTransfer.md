@@ -1,37 +1,57 @@
-# Ingress Tool Transfer
-After gaining a foothold in a victim environment, adversaries often deploy non-native tools for lateral movement and other post-exploitation activity.
+# Red Canary 2023: Ingress Tool Transfer Detection
 
-## Source: https://redcanary.com/threat-detection-report/techniques/ingress-tool-transfer/
+## Query Information
 
-## Suspicious PowerShell commands
-Adversaries leverage PowerShell for ingress tool transfer more than any other tool. As such, monitoring for PowerShell process execution in conjunction with suspicious PowerShell commands in the command line can be a fruitful way to detect malicious ingress tool transfers.
+#### MITRE ATT&CK Technique(s)
 
-process == powershell.exe && command_includes ('downloadstring' || 'downloadata' || 'downloadfile' || 'iex' || '.invoke' || 'invoke-expression')
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1105 | Ingress Tool Transfer | [Ingress Tool Transfer](https://attack.mitre.org/techniques/T1105/) |
 
-`DeviceProcessEvents
-| where FileName =~ "powershell.exe" and ProcessCommandLine has_any ('downloadstring','downloadata','downloadfile','iex','.invoke','invoke-expression')`
+#### Description
+Detection queries for malicious tool transfer activity based on Red Canary 2023 threat report. Covers suspicious PowerShell download commands, certutil URL cache abuse, and BITSAdmin downloads.
 
+#### Risk
+After gaining initial access, adversaries transfer attack tools into victim environments using PowerShell, certutil, and bitsadmin. These are common second-stage payload delivery mechanisms used by many threat actors.
 
-## CertUtil downloading malicious binaries
-Adversaries often bypass security controls by using the Windows Certificate Utility (certutil.exe) to download malicious code. In general, they leverage certutil.exe along with the -split command-line option.
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
 
-process == certutil.exe && command_includes ('urlcache' && 'split')
+#### References
+- https://redcanary.com/threat-detection-report/techniques/ingress-tool-transfer/
 
-`DeviceProcessEvents
-| where FileName =~ "certutil.exe" and ProcessCommandLine has_any ('urlcache','split')`
+## Defender For Endpoint
+```KQL
+DeviceProcessEvents
+| where FileName =~ "powershell.exe" and ProcessCommandLine has_any ('downloadstring','downloadata','downloadfile','iex','.invoke','invoke-expression')
+```
 
-## BITSAdmin downloading malicious binaries
-It’s not unusual for adversaries, including ones who peddle ransomware, to use BITSAdmin to download arbitrary files from the internet in an effort to evade application blocklisting. The following analytic will look for the execution of bitsadmin.exe with command options that suggest a file is being downloaded:
- 
-process== bitsadmin.exe && command_includes (download' || 'transfer')
+```KQL
+DeviceProcessEvents
+| where FileName =~ "certutil.exe" and ProcessCommandLine has_any ('urlcache','split')
+```
 
-`DeviceProcessEvents
-| where FileName =~ "bitsadmin.exe" and ProcessCommandLine has_any ('download','transfer')`
+```KQL
+DeviceProcessEvents
+| where FileName =~ "bitsadmin.exe" and ProcessCommandLine has_any ('download','transfer')
+```
 
+## Sentinel
+```KQL
+DeviceProcessEvents
+| where FileName =~ "powershell.exe" and ProcessCommandLine has_any ('downloadstring','downloadata','downloadfile','iex','.invoke','invoke-expression')
+```
 
+```KQL
+DeviceProcessEvents
+| where FileName =~ "certutil.exe" and ProcessCommandLine has_any ('urlcache','split')
+```
 
-
-
-
-
-
+```KQL
+DeviceProcessEvents
+| where FileName =~ "bitsadmin.exe" and ProcessCommandLine has_any ('download','transfer')
+```

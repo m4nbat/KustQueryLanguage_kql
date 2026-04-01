@@ -1,79 +1,111 @@
-# Red Canary Threat Report - Windows Command Shell
+# Red Canary 2023: Windows Management Instrumentation (WMI) Detection
 
-**Source:** https://redcanary.com/threat-detection-report/techniques/windows-command-shell/
+## Query Information
 
-**Experimental hunting queries based on Red Canary threat report (Untested)**
+#### MITRE ATT&CK Technique(s)
 
-## Suspicious process lineage
-In general, trusted binaries and known administrative tools and processes will initiate WMI activity. As such, it makes sense to look for known bad processes launching WMI or deviations from the expected where a legitimate but unusual Windows binary spawns WMI—or spawns from it. 
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1047 | Windows Management Instrumentation | [WMI](https://attack.mitre.org/techniques/T1047/) |
 
-**Pseudocode:** parent_process == wmiprvse.exe && process == ('rundll32.exe' || 'msbuild.exe' || 'powershell.exe' || 'cmd.exe' || 'mshta.exe')
+#### Description
+Detection queries for malicious WMI usage based on Red Canary 2023 threat report. Covers suspicious process lineage, wmic.exe with suspicious commands, office products spawning WMI, WMI reconnaissance, shadow copy deletion, and PowerShell WMI cmdlets.
 
-**Kusto:**
-`DeviceProcessEvents
+#### Risk
+WMI is heavily abused by adversaries for execution, persistence, lateral movement, and reconnaissance. Detecting anomalous WMI activity is critical as it is used by many threat groups including ransomware operators.
+
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
+
+#### References
+- https://redcanary.com/threat-detection-report/techniques/wmi/
+
+## Defender For Endpoint
+```KQL
+DeviceProcessEvents
 | where InitiatingProcessParentFileName =~ "wmiprvse.exe" or InitiatingProcessFileName =~ "wmiprvse.exe"
-| where InitiatingProcessFileName in~ ("rundll32.exe", "msbuild.exe", "powershell.exe", "cmd.exe", "mshta.exe") or FileName in~ FileName in~ ("rundll32.exe", "msbuild.exe", "powershell.exe", "cmd.exe", "mshta.exe")`
+| where InitiatingProcessFileName in~ ("rundll32.exe", "msbuild.exe", "powershell.exe", "cmd.exe", "mshta.exe") or FileName in~ FileName in~ ("rundll32.exe", "msbuild.exe", "powershell.exe", "cmd.exe", "mshta.exe")
+```
 
-## Suspicious commands
-Looking for suspicious command-line parameters is another solid indicator of malice. Certain red team and post-exploitation frameworks will spawn unique and unsigned binaries or commands remotely using the well known process call create command, and we’ve got a couple different detection methods that have alerted us to related activity over the years. Potentially suspicious WMI command switches include create, node:, process, and call. Of course, the maliciousness of these commands are context-specific, and therefore, the following may require tuning or generate high volumes of false positives.
+```KQL
+DeviceProcessEvents
+| where (InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe") and (ProcessCommandLine  has_any ("create", "node:", "process", "call") or  InitiatingProcessCommandLine has_any ("create", "node:", "process", "call"))
+```
 
-**Pseudocode** process == wmic.exe && command_includes ('create' || 'node:' || 'process' || 'call')
-
-**Kusto:**
-`DeviceProcessEvents
-| where (InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe") and (ProcessCommandLine  has_any ("create", "node:", "process", "call") or  InitiatingProcessCommandLine has_any ("create", "node:", "process", "call"))`
-
-## Unusual module loads
-By monitoring and detecting on module loads, you can catch a variety of different malicious activities, including defense evasion and credential theft. In cases where an adversary is using WMI for credential theft, consider looking for the execution of wmiprvse.exe (or its child processes) with unusual module loads like samlib.dll or vaultcli.dll. WMI is also a useful vehicle for bypassing application controls, and we commonly see adversaries—real and simulated–using a WMI bypass method called “SquibblyTwo.”
-
-**Pseudocode** process == wmic.exe && command_includes ('format:') && module_load == ('jscript.dll' || 'vbscript.dll') 
-
-**Kusto:**
-`DeviceProcessEvents
+```KQL
+DeviceProcessEvents
 | where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe" or InitiatingProcessParentFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
 | where InitiatingProcessCommandline contains "format:" or ProcessCommandline contains "format:"
-// work to be done to identify how to link module loads | where InitiatingProcessFileName in~ ("jscript.dll", "vbscript.dll") "wmic.exe" or FileName in~ ("jscript.dll", "vbscript.dll")`
+// work to be done to identify how to link module loads | where InitiatingProcessFileName in~ ("jscript.dll", "vbscript.dll") "wmic.exe" or FileName in~ ("jscript.dll", "vbscript.dll")
+```
 
-## Office products spawning WMI
-It’s almost always malicious when wmic.exe spawns as a child process of Microsoft Office and similar products. As such, it makes sense to examine the chain of execution and follow-on activity when this occurs.
-
-**Pseudocode** parent_process == ('winword.exe' || 'excel.exe') && process == wmic.exe
-
-**Kusto:**
-`DeviceProcessEvents
+```KQL
+DeviceProcessEvents
 | where InitiatingProcessParentFileName in~ ("winword.exe", "excel.exe") or InitiatingProcessFileName in~ ("winword.exe", "excel.exe")
-| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"`
-
-## WMI reconnaissance
-Reconnaissance is harder to detect because it looks very similar to normal admin behavior. Even so, we detect a relatively high volume of adversaries leveraging WMI to quickly gather domain information such as users, groups, or computers in the domain.
-
-**Pseudocode** process == wmic.exe && command_includes ('\ldap' || 'ntdomain')
-
-**Kusto:**
-`DeviceProcessEvents
 | where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
-| where InitiatingProcessCommandLine has_any ("\\ldap", "ntdomain") or ProcessCommandLine has_any ("\\ldap", "ntdomain")`
+```
 
-## Shadow copy deletion
-It’s not uncommon for ransomware operators to leverage WMI to delete volume shadows, significantly complicating the process for recovering access to encrypted systems and files. If you want to detect ransomware using WMI to delete shadow copies, consider looking for wmic.exe execution with command lines including shadowcopy or delete.
-
-**Pseudocode** process == wmic.exe && command_includes ('shadowcopy' && 'delete')
-
-**Kusto:**
-`DeviceProcessEvents
+```KQL
+DeviceProcessEvents
 | where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
-| where InitiatingProcessCommandLine has_all ("shadowcopy", "delete") or ProcessCommandLine has_all ("shadowcopy", "delete")`
+| where InitiatingProcessCommandLine has_any ("\\ldap", "ntdomain") or ProcessCommandLine has_any ("\\ldap", "ntdomain")
+```
 
-## Suspicious PowerShell cmdlets
-There are numerous default PowerShell cmdlets that allow administrators to leverage WMI via PowerShell. Both adversaries and administrators use these cmdlets to query the operating system or execute commands, either locally or remotely. Cmdlets like Get-WMIObject are often used for reconnaissance.
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+| where InitiatingProcessCommandLine has_all ("shadowcopy", "delete") or ProcessCommandLine has_all ("shadowcopy", "delete")
+```
 
-**Pseudocode** process == powershell.exe && command_includes ('invoke-wmimethod' || 'invoke-cimmethod' || 'get-wmiobject' || 'get-ciminstance' || 'wmiclass')
-
-**Kusto:**
-`DeviceProcessEvents
+```KQL
+DeviceProcessEvents
 | where InitiatingProcessFileName =~ "powershell.exe" or FileName =~ "powershell.exe"
-| where InitiatingProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass") or ProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass")`
+| where InitiatingProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass") or ProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass")
+```
 
+## Sentinel
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessParentFileName =~ "wmiprvse.exe" or InitiatingProcessFileName =~ "wmiprvse.exe"
+| where InitiatingProcessFileName in~ ("rundll32.exe", "msbuild.exe", "powershell.exe", "cmd.exe", "mshta.exe") or FileName in~ FileName in~ ("rundll32.exe", "msbuild.exe", "powershell.exe", "cmd.exe", "mshta.exe")
+```
 
+```KQL
+DeviceProcessEvents
+| where (InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe") and (ProcessCommandLine  has_any ("create", "node:", "process", "call") or  InitiatingProcessCommandLine has_any ("create", "node:", "process", "call"))
+```
 
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe" or InitiatingProcessParentFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+| where InitiatingProcessCommandline contains "format:" or ProcessCommandline contains "format:"
+// work to be done to identify how to link module loads | where InitiatingProcessFileName in~ ("jscript.dll", "vbscript.dll") "wmic.exe" or FileName in~ ("jscript.dll", "vbscript.dll")
+```
 
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessParentFileName in~ ("winword.exe", "excel.exe") or InitiatingProcessFileName in~ ("winword.exe", "excel.exe")
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+```
+
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+| where InitiatingProcessCommandLine has_any ("\\ldap", "ntdomain") or ProcessCommandLine has_any ("\\ldap", "ntdomain")
+```
+
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "wmic.exe" or FileName =~ "wmic.exe"
+| where InitiatingProcessCommandLine has_all ("shadowcopy", "delete") or ProcessCommandLine has_all ("shadowcopy", "delete")
+```
+
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessFileName =~ "powershell.exe" or FileName =~ "powershell.exe"
+| where InitiatingProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass") or ProcessCommandLine has_any ("invoke-wmimethod", "invoke-cimmethod", "get-wmiobject", "get-ciminstance", "wmiclass")
+```

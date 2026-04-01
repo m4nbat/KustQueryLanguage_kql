@@ -1,24 +1,72 @@
-Source:
+# Red Canary 2023: PowerShell Suspicious Activity Detection
 
+## Query Information
 
+#### MITRE ATT&CK Technique(s)
 
-## Child process or rundll32 with a webrequest in the commandline
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1059.001 | Command and Scripting Interpreter: PowerShell | [PowerShell](https://attack.mitre.org/techniques/T1059/001/) |
+| T1620 | Reflective Code Loading | [Reflective Code Loading](https://attack.mitre.org/techniques/T1620/) |
 
-`DeviceImageLoadEvents
-| where InitiatingProcessParentFileName =~ "rundll32.exe" and InitiatingProcessCommandLine has_any ("iwr","Invoke-webrequest")`
+#### Description
+Detection queries for suspicious PowerShell activity. Covers rundll32 child processes with web requests, iex/iwr regex detection, and system.management.automation.dll loading by unusual processes.
 
-## Weeding out partial matches of iex or iwr using regex
+#### Risk
+PowerShell is one of the most commonly abused tools by adversaries for execution, persistence, and lateral movement. Detecting anomalous PowerShell module loads and command patterns is essential for catching threats early.
 
-`DeviceProcessEvents
-| where ProcessCommandLine matches regex @"[^\w]iex[^\w]|invoke-expression"`
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
 
-`DeviceProcessEvents
-| where ProcessCommandLine matches regex @"[^\w]iwr[^\w]|invoke-webrequest"`
+#### References
+- https://redcanary.com/threat-detection-report/techniques/powershell/
 
-## system.management.automation.dll
+## Defender For Endpoint
+```KQL
+DeviceImageLoadEvents
+| where InitiatingProcessParentFileName =~ "rundll32.exe" and InitiatingProcessCommandLine has_any ("iwr","Invoke-webrequest")
+```
 
+```KQL
+DeviceProcessEvents
+| where ProcessCommandLine matches regex @"[^\w]iex[^\w]|invoke-expression"
+```
+
+```KQL
+DeviceProcessEvents
+| where ProcessCommandLine matches regex @"[^\w]iwr[^\w]|invoke-webrequest"
+```
+
+```KQL
 let excludedParentProcesses = datatable (process:string)["SenseIR.exe","SenseCM.exe"];
 DeviceImageLoadEvents
 | where FileName contains "system.management.automation.dll" and InitiatingProcessParentFileName !in~ (excludedParentProcesses)
 | project InitiatingProcessParentFileName, InitiatingProcessFileName, InitiatingProcessCommandLine
+```
 
+## Sentinel
+```KQL
+DeviceImageLoadEvents
+| where InitiatingProcessParentFileName =~ "rundll32.exe" and InitiatingProcessCommandLine has_any ("iwr","Invoke-webrequest")
+```
+
+```KQL
+DeviceProcessEvents
+| where ProcessCommandLine matches regex @"[^\w]iex[^\w]|invoke-expression"
+```
+
+```KQL
+DeviceProcessEvents
+| where ProcessCommandLine matches regex @"[^\w]iwr[^\w]|invoke-webrequest"
+```
+
+```KQL
+let excludedParentProcesses = datatable (process:string)["SenseIR.exe","SenseCM.exe"];
+DeviceImageLoadEvents
+| where FileName contains "system.management.automation.dll" and InitiatingProcessParentFileName !in~ (excludedParentProcesses)
+| project InitiatingProcessParentFileName, InitiatingProcessFileName, InitiatingProcessCommandLine
+```

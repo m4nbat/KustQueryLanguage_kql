@@ -1,53 +1,109 @@
-# Process Injection
-Process Injection continues to be a versatile tool that adversaries lean on to evade defensive controls and gain access to sensitive systems and information.
+# Red Canary 2023: Process Injection Detection
 
-## Source
-https://redcanary.com/threat-detection-report/techniques/process-injection/
+## Query Information
 
-## Kusto Queries
+#### MITRE ATT&CK Technique(s)
 
-### PowerShell injecting into anything
-`let exclusions = datatable (processFileName:string,processFolderPath:string)["MsMpEng.exe",@"C:\ProgramData\Microsoft\Windows Defender\Platform\","MsSense.exe",@"C:\Program Files\Windows Defender Advanced Threat Protection"];
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1055 | Process Injection | [Process Injection](https://attack.mitre.org/techniques/T1055/) |
+
+#### Description
+Detection queries based on the Red Canary 2023 threat report for process injection. Covers PowerShell injecting into processes, processes executing without command lines, unusual network connections from trusted processes, and LSASS injection.
+
+#### Risk
+Process injection is one of the most versatile adversary techniques, enabling code execution in trusted processes, privilege escalation, and defense evasion. It is heavily used by post-exploitation frameworks like Cobalt Strike.
+
+#### Author <Optional>
+- **Name:** Gavin Knapp
+- **Github:** https://github.com/m4nbat 
+- **Twitter:** https://twitter.com/knappresearchlb
+- **LinkedIn:** https://www.linkedin.com/in/grjk83/
+- **Website:**
+
+#### References
+- https://redcanary.com/threat-detection-report/techniques/process-injection/
+
+## Defender For Endpoint
+```KQL
+let exclusions = datatable (processFileName:string,processFolderPath:string)["MsMpEng.exe",@"C:\ProgramData\Microsoft\Windows Defender\Platform\","MsSense.exe",@"C:\Program Files\Windows Defender Advanced Threat Protection"];
 DeviceEvents
 | where ActionType =~ "ReadProcessMemoryApiCall" and FileName =~ "powershell.exe"
-| where InitiatingProcessFileName !in~ (exclusions) and InitiatingProcessFolderPath !in~ (exclusions)`
+| where InitiatingProcessFileName !in~ (exclusions) and InitiatingProcessFolderPath !in~ (exclusions)
+```
 
-### Process executing sans command lines
-One major tell for process injection is the absence of command lines. Detecting the absence of anything, including a command line, can be tricky, and this pseudo-analytic only works for processes where you expect corresponding commands. However, you may be able to iterate on the following amalgamation of detection logic to improve detection coverage. 
-
-`DeviceProcessEvents
+```KQL
+DeviceProcessEvents
 | where FileName in ('backgroundtaskhost.exe', 'svchost.exe', 'dllhost.exe', 'werfault.exe', 'searchprotocolhost.exe', 'wuauclt.exe', 'spoolsv.exe', 'rundll32.exe', 'regasm.exe', 'regsvr32.exe', 'regsvcs.exe')
 //regex to extract the commandline following a windows binary as MDE commandline field usually contains "123.exe" or '123.exe' or 123.exe followed by a command.
 | where ProcessCommandLine matches regex "(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$"
 //regex to extract the commandline after the .exe
 | extend CommandLineArgs = extract("(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$", 2, ProcessCommandLine)
-| where isempty(CommandLineArgs)`
+| where isempty(CommandLineArgs)
+```
 
-### Network connections where there shouldn’t be
-Detecting purely on processes making network connections has the potential to generate a torrent of false positives. However, it can also identify suspicious injection activity—particularly if you tune the logic to filter out the eccentricities in your specific environment.
-
-`let FileNames = datatable(name:string)["notepad.exe","calc.exe"];
+```KQL
+let FileNames = datatable(name:string)["notepad.exe","calc.exe"];
 DeviceNetworkEvents
-| where InitiatingProcessFileName in~ (FileNames)`
+| where InitiatingProcessFileName in~ (FileNames)
+```
 
-
-### Injection into LSASS
-Since injection into lsass.exe is common, impactful, and frequently suspicious, it deserves to be called out individually. To that point, it would be worth your time to determine and enumerate the processes in your environment that routinely or occasionally obtain a handle to lsass.exe. Any access outside of the baseline should be treated as suspicious. 
-
-`let exclusions = datatable (processFileName:string,processFolderPath:string)["healthservice.exe",@"C:\Program Files\Microsoft Monitoring Agent\Agent",
+```KQL
+let exclusions = datatable (processFileName:string,processFolderPath:string)["healthservice.exe",@"C:\Program Files\Microsoft Monitoring Agent\Agent",
 "MsMpEng.exe",@"C:\ProgramData\Microsoft\Windows Defender\Platform\","MsSense.exe",@"C:\Program Files\Windows Defender Advanced Threat Protection"];
 DeviceEvents
-| where ActionType =~ "ReadProcessMemoryApiCall" and FileName =~ "lsass.exe" and (InitiatingProcessFileName !in~ (exclusions) and InitiatingProcessFolderPath !in~ (exclusions))`
+| where ActionType =~ "ReadProcessMemoryApiCall" and FileName =~ "lsass.exe" and (InitiatingProcessFileName !in~ (exclusions) and InitiatingProcessFolderPath !in~ (exclusions))
+```
 
-### Suspected LSASS Dump
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessCommandLine has_all ("procdump", "lsass") or InitiatingProcessCommandLine has_all ("rundll32", "comsvcs", "MiniDump")
+```
 
-`DeviceProcessEvents
-| where InitiatingProcessCommandLine has_all ("procdump", "lsass") or InitiatingProcessCommandLine has_all ("rundll32", "comsvcs", "MiniDump")`
-
-### Use to look for unusual cross process injection
-
-`let lolbins = datatable (file:string)["rundll32.exe","MSbuild.exe","PowerShell.exe","Wscript.exe","Cscript.exe","Msiexec.exe","Rundll32"];
+```KQL
+let lolbins = datatable (file:string)["rundll32.exe","MSbuild.exe","PowerShell.exe","Wscript.exe","Cscript.exe","Msiexec.exe","Rundll32"];
 DeviceEvents
-| where ActionType =~ "ReadProcessMemoryApiCall" and InitiatingProcessFileName in~ (lolbins)`
+| where ActionType =~ "ReadProcessMemoryApiCall" and InitiatingProcessFileName in~ (lolbins)
+```
 
+## Sentinel
+```KQL
+let exclusions = datatable (processFileName:string,processFolderPath:string)["MsMpEng.exe",@"C:\ProgramData\Microsoft\Windows Defender\Platform\","MsSense.exe",@"C:\Program Files\Windows Defender Advanced Threat Protection"];
+DeviceEvents
+| where ActionType =~ "ReadProcessMemoryApiCall" and FileName =~ "powershell.exe"
+| where InitiatingProcessFileName !in~ (exclusions) and InitiatingProcessFolderPath !in~ (exclusions)
+```
 
+```KQL
+DeviceProcessEvents
+| where FileName in ('backgroundtaskhost.exe', 'svchost.exe', 'dllhost.exe', 'werfault.exe', 'searchprotocolhost.exe', 'wuauclt.exe', 'spoolsv.exe', 'rundll32.exe', 'regasm.exe', 'regsvr32.exe', 'regsvcs.exe')
+//regex to extract the commandline following a windows binary as MDE commandline field usually contains "123.exe" or '123.exe' or 123.exe followed by a command.
+| where ProcessCommandLine matches regex "(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$"
+//regex to extract the commandline after the .exe
+| extend CommandLineArgs = extract("(['\"]?\\w+\\.exe['\"]?)(\\s+.+)?$", 2, ProcessCommandLine)
+| where isempty(CommandLineArgs)
+```
+
+```KQL
+let FileNames = datatable(name:string)["notepad.exe","calc.exe"];
+DeviceNetworkEvents
+| where InitiatingProcessFileName in~ (FileNames)
+```
+
+```KQL
+let exclusions = datatable (processFileName:string,processFolderPath:string)["healthservice.exe",@"C:\Program Files\Microsoft Monitoring Agent\Agent",
+"MsMpEng.exe",@"C:\ProgramData\Microsoft\Windows Defender\Platform\","MsSense.exe",@"C:\Program Files\Windows Defender Advanced Threat Protection"];
+DeviceEvents
+| where ActionType =~ "ReadProcessMemoryApiCall" and FileName =~ "lsass.exe" and (InitiatingProcessFileName !in~ (exclusions) and InitiatingProcessFolderPath !in~ (exclusions))
+```
+
+```KQL
+DeviceProcessEvents
+| where InitiatingProcessCommandLine has_all ("procdump", "lsass") or InitiatingProcessCommandLine has_all ("rundll32", "comsvcs", "MiniDump")
+```
+
+```KQL
+let lolbins = datatable (file:string)["rundll32.exe","MSbuild.exe","PowerShell.exe","Wscript.exe","Cscript.exe","Msiexec.exe","Rundll32"];
+DeviceEvents
+| where ActionType =~ "ReadProcessMemoryApiCall" and InitiatingProcessFileName in~ (lolbins)
+```
