@@ -1,10 +1,31 @@
-# DarkGate MDE Detetcions
+# DarkGate MDE Detections
 
-# Source (Intrusion Analysis)
+## Query Information
 
-# Port and HTTP request based detection
+#### MITRE ATT&CK Technique(s)
 
-```
+| Technique ID | Title    | Link    |
+| ---  | --- | --- |
+| T1071.001 | Application Layer Protocol: Web Protocols | [Application Layer Protocol: Web Protocols](https://attack.mitre.org/techniques/T1071/001/) |
+
+#### Description
+Detects DarkGate command and control activity based on port and HTTP request patterns. DarkGate uses port 2351 with HTTP POST requests for C2 communications.
+
+#### Risk
+DarkGate C2 communications over port 2351 using HTTP POST requests may indicate an active malware infection and remote control of the compromised host.
+
+#### Author <Optional>
+- **Name:**
+- **Github:**
+- **Twitter:**
+- **LinkedIn:**
+- **Website:**
+
+#### References
+- Intrusion Analysis
+
+## Defender For Endpoint
+```KQL
 DeviceNetworkEvents
 | where TimeGenerated > ago(60d)
 | extend HTTPMethod = tostring(AdditionalFields.method)
